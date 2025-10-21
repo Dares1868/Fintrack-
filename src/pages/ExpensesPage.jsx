@@ -48,7 +48,6 @@ const monthNames = [
   "December",
 ];
 
-// format helpers
 const formatMonthYear = (year, monthIndex) =>
   `${monthNames[monthIndex]} ${year}`;
 
