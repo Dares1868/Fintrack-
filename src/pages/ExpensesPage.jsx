@@ -1,8 +1,7 @@
 import React, { useState, useEffect, useMemo, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import SidebarMenu from "../components/ui/SidebarMenu";
-import "../styles/dashboard.css";
-import DonutChart from "../components/ui/DonutChart";
+import DonutChart from "../components/ui/DonutChart1";
 import { loadTransactions } from "../utils/storage/transactionsStorage";
 
 const CATEGORY_COLORS = {
@@ -176,11 +175,10 @@ const ExpensesPage = () => {
       : String(selectedYear);
   }, [viewMode, selectedYear, selectedMonth]);
 
-  const headerTotal = useMemo(() => {
-    return filteredTransactions
-      .reduce((a, t) => a + Math.abs(t.amount), 0)
-      .toFixed(2);
+  const headerTotalValue = useMemo(() => {
+    return filteredTransactions.reduce((a, t) => a + Math.abs(t.amount), 0);
   }, [filteredTransactions]);
+  const headerTotal = headerTotalValue.toFixed(2);
 
   const handlePickMonth = (year, month) => {
     setSelectedYear(year);
@@ -275,7 +273,9 @@ const ExpensesPage = () => {
             )}
           </div>
 
-          <span className="expenses-total">-${headerTotal}</span>
+          <span className="expenses-total">
+            {headerTotalValue === 0 ? `$${headerTotal}` : `-$${headerTotal}`}
+          </span>
 
           <div style={{ marginLeft: "auto", display: "flex", gap: 8 }}>
             <button
@@ -321,7 +321,7 @@ const ExpensesPage = () => {
 
         {chartData.length > 0 ? (
           <div className="expenses-chart-wrap">
-            <DonutChart data={chartData} total={total} />
+            <DonutChart data={chartData} total={total} mode={viewMode} />
           </div>
         ) : (
           <div style={{ opacity: 0.7, padding: "16px 0" }}>
