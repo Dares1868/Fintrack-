@@ -10,14 +10,32 @@ const Register = () => {
   const [password, setPassword] = useState("");
   const [repeatPassword, setRepeatPassword] = useState("");
 
+  const [errors, setErrors] = useState({});
   const handleRegister = (e) => {
     e.preventDefault();
-    if (password !== repeatPassword) {
-      alert("Passwords do not match!");
-      return;
+    const newErrors = {};
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    if (!emailRegex.test(email)) {
+      newErrors.email = "Incorrect email!";
+    } else if (userExists(email)) {
+      newErrors.email = "User already exists!";
     }
-    if (userExists(email)) {
-      alert("User already exists!");
+
+    if (password.length < 6) {
+      const passwordRegex = /^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*(),.?":{}|<>]).{6,}$/;
+      if (!passwordRegex.test(password)) {
+        newErrors.password =
+          "Password should be at least 6 characters, include 1 uppercase letter, 1 number, and 1 special character (!@#$%^&* etc)!";
+      }
+      newErrors.password = "Password should have at least 1 number!";
+    }
+
+    if (password !== repeatPassword) {
+      newErrors.repeatPassword = "Passwords do not match!";
+    }
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
       return;
     }
     saveUser({ fullName, email, password });
@@ -52,6 +70,7 @@ const Register = () => {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
           />
+          {errors.email && <p className="error">{errors.email}</p>}
           <label>Password</label>
           <input
             type="password"
@@ -60,6 +79,7 @@ const Register = () => {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
+          {errors.password && <p className="error">{errors.password}</p>}
           <label>Repeat password</label>
           <input
             type="password"
@@ -68,6 +88,7 @@ const Register = () => {
             value={repeatPassword}
             onChange={(e) => setRepeatPassword(e.target.value)}
           />
+          <p className="error">{errors.repeatPassword}</p>
           <button type="submit" className="login-btn">
             Create account
           </button>

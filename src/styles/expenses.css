@@ -1,0 +1,147 @@
+.expenses-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.expenses-title {
+  background: transparent;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  font-size: 28px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: inherit;
+}
+
+.expenses-title .caret {
+  font-size: 16px;
+  opacity: 0.8;
+}
+
+.month-dropdown {
+  position: absolute;
+  top: 110%;
+  left: 0;
+  min-width: 220px;
+  max-height: 300px;
+  overflow-y: auto;
+  background: white;
+  color: #111;
+  border-radius: 12px;
+  padding: 8px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  z-index: 50;
+}
+
+.month-dropdown .month-btn {
+  width: 100%;
+  text-align: left;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  background: transparent;
+  font-weight: 500;
+}
+
+.month-dropdown .month-btn.active {
+  background: #eef2ff;
+  font-weight: 700;
+}
+
+.expenses-total {
+  font-size: 18px;
+  font-weight: 700;
+  margin-left: 12px;
+}
+
+.view-toggle {
+  margin-left: auto;
+  display: flex;
+  gap: 8px;
+}
+
+.view-toggle .toggle-btn {
+  padding: 8px 12px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  background: transparent;
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.view-toggle .toggle-btn.active {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.expenses-chart-wrap {
+  margin-top: 20px;
+}
+
+.no-data {
+  opacity: 0.7;
+  padding: 16px 0;
+}
+
+.expenses-transactions-title {
+  margin-top: 20px;
+  font-weight: 700;
+  font-size: 18px;
+}
+
+.expenses-transactions-list {
+  margin-top: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.expenses-transaction-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.expenses-transaction-icon {
+  width: 44px;
+  height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  color: white;
+  font-size: 20px;
+}
+
+.expenses-transaction-row > div.amount {
+  font-weight: 700;
+  font-size: 18px;
+}
+
+/* Moved from inline styles in ExpensesPage.jsx */
+.month-menu-wrap {
+  position: relative;
+}
+
+.month-empty {
+  padding: 8px 10px;
+  opacity: 0.7;
+}
+
+.transaction-details {
+  flex: 1;
+}
+
+.transaction-label {
+  font-weight: 700;
+}
+
+.transaction-meta {
+  font-size: 14px;
+  opacity: 0.7;
+}
