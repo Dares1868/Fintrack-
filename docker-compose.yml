@@ -1,0 +1,76 @@
+services:
+  # MySQL Database
+  fintrack-mysql:
+    image: mysql:8.0
+    container_name: fintrack-mysql
+    environment:
+      MYSQL_DATABASE: fintrack_db
+      MYSQL_USER: fintrack_user
+      MYSQL_PASSWORD: userpassword
+      MYSQL_ROOT_PASSWORD: rootpassword
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./backend/database/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - fintrack-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      timeout: 20s
+      retries: 10
+
+  # Backend (Node.js/Express)
+  fintrack-backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: fintrack-backend
+    environment:
+      NODE_ENV: development
+      DB_HOST: fintrack-mysql
+      DB_PORT: 3306
+      DB_NAME: fintrack_db
+      DB_USER: fintrack_user
+      DB_PASSWORD: userpassword
+      SESSION_SECRET: your-secret-key-here-change-in-production
+      PORT: 3001
+      FRONTEND_URL: http://localhost:3000
+    ports:
+      - "3001:3001"
+    volumes:
+      - ./backend:/usr/src/app
+      - /usr/src/app/node_modules
+    depends_on:
+      fintrack-mysql:
+        condition: service_healthy
+    networks:
+      - fintrack-network
+    command: npm run dev
+
+  # Frontend (React/Vite)
+  fintrack-frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+    container_name: fintrack-frontend
+    environment:
+      VITE_API_URL: http://localhost:3001
+      VITE_NODE_ENV: development
+    ports:
+      - "3000:3000"
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+    depends_on:
+      - fintrack-backend
+    networks:
+      - fintrack-network
+    command: npm run dev
+
+volumes:
+  mysql_data:
+
+networks:
+  fintrack-network:
+    driver: bridge

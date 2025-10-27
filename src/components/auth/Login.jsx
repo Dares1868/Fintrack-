@@ -1,21 +1,39 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import "../../styles/introStart.css";
-import { findUser } from "../../utils/storage/userStorage";
+import authService from "../../services/authService";
 
 const Login = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [successMessage, setSuccessMessage] = useState("");
 
-  const handleSubmit = (e) => {
+  useEffect(() => {
+    // Check if there's a success message from registration
+    if (location.state?.message) {
+      setSuccessMessage(location.state.message);
+    }
+  }, [location.state]);
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    const user = findUser({ email, password });
-    if (user) {
-      localStorage.setItem("userFullName", user.fullName);
+    setIsLoading(true);
+    setError("");
+
+    try {
+      const response = await authService.login({ email, password });
+
+      // Store user info and navigate to dashboard
+      localStorage.setItem("userFullName", response.user.name);
       navigate("/app/dashboard");
-    } else {
-      alert("Invalid email or password!");
+    } catch (error) {
+      setError(error.message || "Login failed. Please try again.");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -24,6 +42,8 @@ const Login = () => {
       <span className="logo-top">FinTrack</span>
       <div className="login-center">
         <h1 className="login-title">Welcome back</h1>
+        {successMessage && <p className="success-message">{successMessage}</p>}
+        {error && <p className="error">{error}</p>}
         <form className="login-form" onSubmit={handleSubmit}>
           <label>Email</label>
           <input
@@ -50,8 +70,8 @@ const Login = () => {
               Forgot password?
             </button>
           </div>
-          <button type="submit" className="login-btn">
-            Sign in
+          <button type="submit" className="login-btn" disabled={isLoading}>
+            {isLoading ? "Signing in..." : "Sign in"}
           </button>
         </form>
         <div className="login-bottom-link">

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "../../styles/auth.css";
-import { saveUser, userExists } from "../../utils/storage/userStorage";
+import authService from "../../services/authService";
 
 const Register = () => {
   const navigate = useNavigate();
@@ -11,35 +11,67 @@ const Register = () => {
   const [repeatPassword, setRepeatPassword] = useState("");
 
   const [errors, setErrors] = useState({});
-  const handleRegister = (e) => {
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleRegister = async (e) => {
     e.preventDefault();
     const newErrors = {};
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
     if (!emailRegex.test(email)) {
       newErrors.email = "Incorrect email!";
-    } else if (userExists(email)) {
-      newErrors.email = "User already exists!";
     }
 
+    // Password strength validation
     if (password.length < 6) {
-      const passwordRegex = /^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*(),.?":{}|<>]).{6,}$/;
-      if (!passwordRegex.test(password)) {
+      newErrors.password = "Password must be at least 6 characters long!";
+    } else {
+      const hasUpperCase = /[A-Z]/.test(password);
+      const hasLowerCase = /[a-z]/.test(password);
+      const hasNumber = /\d/.test(password);
+      const hasSpecialChar = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(
+        password
+      );
+
+      if (!hasUpperCase || !hasLowerCase || !hasNumber || !hasSpecialChar) {
         newErrors.password =
-          "Password should be at least 6 characters, include 1 uppercase letter, 1 number, and 1 special character (!@#$%^&* etc)!";
+          "Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character (!@#$%^&* etc.)";
       }
-      newErrors.password = "Password should have at least 1 number!";
     }
 
     if (password !== repeatPassword) {
       newErrors.repeatPassword = "Passwords do not match!";
     }
+
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
       return;
     }
-    saveUser({ fullName, email, password });
-    navigate("/login");
+
+    setIsLoading(true);
+    setErrors({});
+
+    try {
+      await authService.register({
+        name: fullName,
+        email: email,
+        password: password,
+      });
+
+      // Registration successful, navigate to login
+      navigate("/login", {
+        state: {
+          message:
+            "Registration successful! Please login with your credentials.",
+        },
+      });
+    } catch (error) {
+      setErrors({
+        submit: error.message || "Registration failed. Please try again.",
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -79,6 +111,10 @@ const Register = () => {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
+          <p className="password-requirements">
+            Must contain: uppercase letter, lowercase letter, number, and
+            special character (!@#$%^&* etc.)
+          </p>
           {errors.password && <p className="error">{errors.password}</p>}
           <label>Repeat password</label>
           <input
@@ -88,9 +124,12 @@ const Register = () => {
             value={repeatPassword}
             onChange={(e) => setRepeatPassword(e.target.value)}
           />
-          <p className="error">{errors.repeatPassword}</p>
-          <button type="submit" className="login-btn">
-            Create account
+          {errors.repeatPassword && (
+            <p className="error">{errors.repeatPassword}</p>
+          )}
+          {errors.submit && <p className="error">{errors.submit}</p>}
+          <button type="submit" className="login-btn" disabled={isLoading}>
+            {isLoading ? "Creating account..." : "Create account"}
           </button>
         </form>
         <div className="login-bottom-link">
