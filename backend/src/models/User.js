@@ -1,6 +1,7 @@
 const bcrypt = require("bcrypt");
 const crypto = require("crypto");
 const { getPool } = require("../config/database");
+const Category = require("./Category");
 
 class User {
   constructor(userData) {
@@ -33,6 +34,9 @@ class User {
          VALUES (?, ?, ?, ?)`,
         [userData.name, userData.email, hashedPassword, emailVerificationToken]
       );
+
+      // Create default categories for the new user
+      await Category.createDefaultCategories(result.insertId);
 
       // Return the created user (without password)
       const [rows] = await pool.execute(

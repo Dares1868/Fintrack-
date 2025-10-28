@@ -2,35 +2,8 @@ import React, { useState, useEffect, useMemo, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import SidebarMenu from "../components/ui/SidebarMenu";
 import DonutChart from "../components/ui/DonutChart1";
-import { loadTransactions } from "../utils/storage/transactionsStorage";
-
-const CATEGORY_COLORS = {
-  "🛒": "#4BE36A",
-  "🎵": "#FF00C3",
-  "🛍️": "#FFD600",
-  "🏠": "#4B7BE3",
-  "💼": "#A682FF",
-  "📚": "#FF8C00",
-  "💡": "#0000ff",
-};
-const CATEGORY_LABELS = {
-  "🛒": "Food and drink",
-  "🎵": "Entertainment",
-  "🛍️": "Clothes and shoes",
-  "🏠": "Rent",
-  "💼": "Income",
-  "📚": "Education",
-  "💡": "Other",
-};
-const CATEGORY_ICONS = {
-  food: "🛒",
-  entertainment: "🎵",
-  shopping: "🛍️",
-  utilities: "🏠",
-  income: "💼",
-  education: "📚",
-  other: "💡",
-};
+import transactionService from "../services/transactionService";
+import categoryService from "../services/categoryService";
 
 const monthNames = [
   "January",
@@ -59,6 +32,8 @@ const ExpensesPage = () => {
   const navigate = useNavigate();
   const [showMenu, setShowMenu] = useState(false);
   const [transactions, setTransactions] = useState([]);
+  const [categories, setCategories] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   const [selectedMonth, setSelectedMonth] = useState(null);
   const [selectedYear, setSelectedYear] = useState(null);
@@ -68,10 +43,34 @@ const ExpensesPage = () => {
   const menuRef = useRef(null);
 
   useEffect(() => {
-    const allTx = loadTransactions() || [];
-    const expenses = allTx.filter((t) => t.amount < 0);
-    setTransactions(expenses);
+    loadData();
   }, []);
+
+  const loadData = async () => {
+    try {
+      setLoading(true);
+
+      const [transactionsRes, categoriesRes] = await Promise.all([
+        transactionService.getTransactions(),
+        categoryService.getCategories(),
+      ]);
+
+      // Filter only expense transactions
+      const expenses = transactionsRes.transactions.filter(
+        (t) => t.type === "expense"
+      );
+
+      setTransactions(expenses);
+      setCategories(categoriesRes.categories);
+    } catch (error) {
+      console.error("Error loading data:", error);
+      // Set empty data on error
+      setTransactions([]);
+      setCategories([]);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const availableMonths = useMemo(() => {
     const setKey = new Set();
@@ -138,22 +137,27 @@ const ExpensesPage = () => {
   }, [transactions, viewMode, selectedMonth, selectedYear]);
 
   const categoriesMap = useMemo(() => {
+    if (categories.length === 0) return {};
+
     const map = {};
     filteredTransactions.forEach((tx) => {
-      const icon = CATEGORY_ICONS[tx.category] || "💡";
-      if (!map[icon]) {
-        map[icon] = {
+      const category = categories.find((cat) => cat.id === tx.category_id);
+      const categoryKey = category ? category.id : "uncategorized";
+
+      if (!map[categoryKey]) {
+        map[categoryKey] = {
           sum: 0,
           count: 0,
-          label: CATEGORY_LABELS[icon] || "Other",
-          color: CATEGORY_COLORS[icon] || "#18181b",
+          label: category ? category.name : "Uncategorized",
+          color: category ? category.color : "#95a5a6",
+          icon: category ? category.icon : "📋",
         };
       }
-      map[icon].sum += Math.abs(tx.amount);
-      map[icon].count += 1;
+      map[categoryKey].sum += Math.abs(tx.amount);
+      map[categoryKey].count += 1;
     });
     return map;
-  }, [filteredTransactions]);
+  }, [filteredTransactions, categories]);
 
   const chartData = useMemo(
     () =>
@@ -187,6 +191,25 @@ const ExpensesPage = () => {
   };
 
   const handleToggleView = (mode) => setViewMode(mode);
+
+  if (loading) {
+    return (
+      <div className="dashboard-gradient-bg">
+        <button className="burger-btn" onClick={() => setShowMenu(true)}>
+          ☰
+        </button>
+        <button onClick={() => navigate("/app/dashboard")} className="back-btn">
+          ←
+        </button>
+        <SidebarMenu open={showMenu} onClose={() => setShowMenu(false)} />
+        <div className="dashboard-center-wrap">
+          <div style={{ textAlign: "center", padding: "40px", color: "white" }}>
+            Loading expenses data...
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="dashboard-gradient-bg">

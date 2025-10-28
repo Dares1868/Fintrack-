@@ -42,9 +42,9 @@ const SidebarMenu = ({ open, onClose }) => {
         Expenses
       </button>
       <button
-        onClick={() => {
-          // navigate("/app/logout");
-          logoutAction();
+        onClick={async () => {
+          await logoutAction();
+          navigate("/");
           onClose();
         }}
       >

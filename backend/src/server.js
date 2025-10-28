@@ -4,6 +4,8 @@ const session = require("express-session");
 require("dotenv").config();
 
 const authRoutes = require("./routes/authRoutes");
+const transactionRoutes = require("./routes/transactionRoutes");
+const categoryRoutes = require("./routes/categoryRoutes");
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -35,6 +37,8 @@ app.use(
 
 // Routes
 app.use("/api/auth", authRoutes);
+app.use("/api/transactions", transactionRoutes);
+app.use("/api/categories", categoryRoutes);
 
 // Health check endpoint
 app.get("/health", (req, res) => {
