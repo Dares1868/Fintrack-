@@ -216,8 +216,10 @@ const TransactionsPage = () => {
           ) : (
             filtered.map((t, i) => {
               // Find the category for this transaction
-              const category = categories.find(cat => cat.id === t.category_id);
-              
+              const category = categories.find(
+                (cat) => cat.id === t.category_id
+              );
+
               return (
                 <div className="transaction-card" key={i}>
                   <span
@@ -239,14 +241,19 @@ const TransactionsPage = () => {
                   </span>
                   <div className="transaction-info">
                     <span className="transaction-name">{t.description}</span>
-                    <span className="transaction-category" style={{ 
-                      fontSize: "12px", 
-                      color: "#888", 
-                      display: "block" 
-                    }}>
+                    <span
+                      className="transaction-category"
+                      style={{
+                        fontSize: "12px",
+                        color: "#888",
+                        display: "block",
+                      }}
+                    >
                       {category ? category.name : "Uncategorized"}
                     </span>
-                    <span className="transaction-date">{new Date(t.date).toLocaleDateString()}</span>
+                    <span className="transaction-date">
+                      {new Date(t.date).toLocaleDateString()}
+                    </span>
                   </div>
                   <span
                     className={`transaction-amount ${
