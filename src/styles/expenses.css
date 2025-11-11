@@ -190,6 +190,8 @@
 .expenses-no-data {
   opacity: 0.7;
   padding: 16px 0;
+  color: white;
+  text-align: center;
 }
 
 .expenses-transaction-info {

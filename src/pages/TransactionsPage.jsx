@@ -5,9 +5,9 @@ import CategoryIcon from "../components/ui/CategoryIcon";
 import "../styles/dashboard.css";
 import "../styles/transactions.css";
 import {
-  loadTransactions,
-  saveTransactions,
-} from "../utils/storage/transactionsStorage";
+  getTransactions,
+  createTransaction,
+} from "../services/transactionService";
 
 const categoryNames = {
   utilities: "Bills & Utilities",
@@ -39,6 +39,8 @@ const TransactionsPage = () => {
   const [transactions, setTransactions] = useState([]);
   const [filter, setFilter] = useState("all");
   const [showModal, setShowModal] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   const [form, setForm] = useState({
     name: "",
@@ -49,16 +51,24 @@ const TransactionsPage = () => {
   });
 
   useEffect(() => {
-    const rawTxs = loadTransactions();
+    const fetchTransactions = async () => {
+      try {
+        setLoading(true);
+        setError(null);
 
-    const migrated = rawTxs.map((tx) => {
-      if (tx.category) return tx;
-      const category = iconToCategoryMap[tx.icon] || "other";
-      return { ...tx, category };
-    });
+        // Fetch transactions from backend
+        const dbTransactions = await getTransactions();
+        setTransactions(dbTransactions);
+      } catch (err) {
+        console.error("Error loading transactions:", err);
+        setError("Failed to load transactions. Please try again.");
+        setTransactions([]);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-    setTransactions(migrated);
-    saveTransactions(migrated);
+    fetchTransactions();
   }, []);
 
   const filtered = transactions.filter((t) => {
@@ -78,7 +88,7 @@ const TransactionsPage = () => {
     setShowModal(true);
   };
 
-  const handleSaveTransaction = (e) => {
+  const handleSaveTransaction = async (e) => {
     e.preventDefault();
     if (!form.name.trim() || !form.amount || isNaN(form.amount)) {
       alert("Fill all fields correctly");
@@ -91,16 +101,26 @@ const TransactionsPage = () => {
         : Math.abs(parseFloat(form.amount));
 
     const newTx = {
-      ...form,
+      name: form.name,
+      category: form.category,
+      type: form.type,
       amount,
       date: form.date || new Date().toISOString().slice(0, 10),
     };
 
-    const updated = [newTx, ...transactions];
-    setTransactions(updated);
-    saveTransactions(updated);
-
-    setShowModal(false);
+    try {
+      // Save to backend
+      const createdTransaction = await createTransaction(newTx);
+      
+      // Update local state with the new transaction
+      const updated = [createdTransaction, ...transactions];
+      setTransactions(updated);
+      
+      setShowModal(false);
+    } catch (err) {
+      console.error("Error saving transaction:", err);
+      alert("Failed to save transaction. Please try again.");
+    }
   };
 
   const date = new Date();
@@ -142,6 +162,12 @@ const TransactionsPage = () => {
           </button>
         </div>
 
+        {error && (
+          <div style={{ color: "red", padding: "10px", textAlign: "center" }}>
+            {error}
+          </div>
+        )}
+
         <div className="transactions-filters">
           <button
             className={filter === "all" ? "active" : ""}
@@ -166,11 +192,13 @@ const TransactionsPage = () => {
         <div className="transactions-date-header">{currentMonthYear}</div>
 
         <div className="transactions-list">
-          {filtered.length === 0 ? (
+          {loading ? (
+            <div className="transactions-empty">Loading...</div>
+          ) : filtered.length === 0 ? (
             <div className="transactions-empty">No transactions yet</div>
           ) : (
             filtered.map((t, i) => (
-              <div className="transaction-card" key={i}>
+              <div className="transaction-card" key={t.id || i}>
                 <CategoryIcon category={t.category} size={40} />
                 <div className="transaction-info">
                   <span className="transaction-name">{t.name}</span>
