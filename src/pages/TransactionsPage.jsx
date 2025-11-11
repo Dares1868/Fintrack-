@@ -10,22 +10,27 @@ import {
 } from "../utils/storage/transactionsStorage";
 
 const categoryNames = {
-  food: "Food and drink",
-  entertainment: "Entertainment",
-  shopping: "Clothes and shoes",
-  utilities: "Rent",
-  income: "Income",
+  utilities: "Bills & Utilities",
   education: "Education",
+  entertainment: "Entertainment",
+  food: "Food & Dining",
+  health: "Healthcare",
   other: "Other",
+  shopping: "Shopping",
+  transport: "Transportation",
+  travel: "Travel",
 };
 
 const iconToCategoryMap = {
-  "🛒": "food",
-  "🎵": "entertainment",
-  "🛍️": "shopping",
-  "🏠": "utilities",
-  "💼": "income",
-  "📚": "education",
+  "📄": "utilities",
+  "🎓": "education",
+  "🎬": "entertainment",
+  "🍴": "food",
+  "❤️": "health",
+  "💡": "other",
+  "🛒": "shopping",
+  "🚗": "transport",
+  "✈️": "travel",
 };
 
 const TransactionsPage = () => {
@@ -127,14 +132,7 @@ const TransactionsPage = () => {
       </button>
       <SidebarMenu open={showMenu} onClose={() => setShowMenu(false)} />
       <div className="dashboard-center-wrap">
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            marginBottom: 16,
-          }}
-        >
+        <div className="transactions-header">
           <h1 className="dashboard-title">Transactions</h1>
           <button
             className="dashboard-add-transaction-btn"
@@ -169,9 +167,7 @@ const TransactionsPage = () => {
 
         <div className="transactions-list">
           {filtered.length === 0 ? (
-            <div style={{ color: "#bcb6f6", textAlign: "center" }}>
-              No transactions yet
-            </div>
+            <div className="transactions-empty">No transactions yet</div>
           ) : (
             filtered.map((t, i) => (
               <div className="transaction-card" key={i}>

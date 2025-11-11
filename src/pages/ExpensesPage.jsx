@@ -3,33 +3,40 @@ import { useNavigate } from "react-router-dom";
 import SidebarMenu from "../components/ui/SidebarMenu";
 import DonutChart from "../components/ui/DonutChart1";
 import { loadTransactions } from "../utils/storage/transactionsStorage";
+import "../styles/expenses.css";
 
 const CATEGORY_COLORS = {
-  "🛒": "#4BE36A",
-  "🎵": "#FF00C3",
-  "🛍️": "#FFD600",
-  "🏠": "#4B7BE3",
-  "💼": "#A682FF",
-  "📚": "#FF8C00",
-  "💡": "#0000ff",
+  "📄": "#4B7BE3",
+  "🎓": "#FF8C00",
+  "🎬": "#FF00C3",
+  "🍴": "#4BE36A",
+  "❤️": "#FF5E5E",
+  "💡": "#9CA3AF",
+  "🛒": "#FFD600",
+  "🚗": "#00CFFF",
+  "✈️": "#A682FF",
 };
 const CATEGORY_LABELS = {
-  "🛒": "Food and drink",
-  "🎵": "Entertainment",
-  "🛍️": "Clothes and shoes",
-  "🏠": "Rent",
-  "💼": "Income",
-  "📚": "Education",
+  "📄": "Bills & Utilities",
+  "🎓": "Education",
+  "🎬": "Entertainment",
+  "🍴": "Food & Dining",
+  "❤️": "Healthcare",
   "💡": "Other",
+  "🛒": "Shopping",
+  "🚗": "Transportation",
+  "✈️": "Travel",
 };
 const CATEGORY_ICONS = {
-  food: "🛒",
-  entertainment: "🎵",
-  shopping: "🛍️",
-  utilities: "🏠",
-  income: "💼",
-  education: "📚",
+  utilities: "📄",
+  education: "🎓",
+  entertainment: "🎬",
+  food: "🍴",
+  health: "❤️",
   other: "💡",
+  shopping: "🛒",
+  transport: "🚗",
+  travel: "✈️",
 };
 
 const monthNames = [
@@ -140,7 +147,7 @@ const ExpensesPage = () => {
   const categoriesMap = useMemo(() => {
     const map = {};
     filteredTransactions.forEach((tx) => {
-      const icon = CATEGORY_ICONS[tx.category] || "💡";
+      const icon = CATEGORY_ICONS[tx.category] || "⋯";
       if (!map[icon]) {
         map[icon] = {
           sum: 0,
@@ -199,53 +206,23 @@ const ExpensesPage = () => {
       <SidebarMenu open={showMenu} onClose={() => setShowMenu(false)} />
 
       <div className="dashboard-center-wrap">
-        <div className="expenses-header" style={{ alignItems: "center" }}>
-          <div style={{ position: "relative" }} ref={menuRef}>
+        <div className="expenses-header">
+          <div className="month-menu-wrap" ref={menuRef}>
             <button
               className="expenses-title"
               onClick={() => setIsMonthMenuOpen((v) => !v)}
-              style={{
-                background: "transparent",
-                border: "none",
-                padding: 0,
-                cursor: "pointer",
-                fontSize: 28,
-                fontWeight: 800,
-                display: "flex",
-                alignItems: "center",
-                gap: 8,
-              }}
               aria-haspopup="listbox"
               aria-expanded={isMonthMenuOpen}
               title="Choose month"
             >
               {title}
-              <span style={{ fontSize: 16, opacity: 0.8 }}>▾</span>
+              <span className="expenses-title-caret">▾</span>
             </button>
 
             {isMonthMenuOpen && (
-              <div
-                role="listbox"
-                className="month-dropdown"
-                style={{
-                  position: "absolute",
-                  top: "110%",
-                  left: 0,
-                  minWidth: 220,
-                  maxHeight: 300,
-                  overflowY: "auto",
-                  background: "white",
-                  color: "#111",
-                  borderRadius: 12,
-                  padding: 8,
-                  boxShadow: "0 8px 24px rgba(0,0,0,0.15)",
-                  zIndex: 50,
-                }}
-              >
+              <div role="listbox" className="month-dropdown">
                 {availableMonths.length === 0 && (
-                  <div style={{ padding: "8px 10px", opacity: 0.7 }}>
-                    No months
-                  </div>
+                  <div className="month-empty">No months</div>
                 )}
                 {availableMonths.map((m) => {
                   const isActive =
@@ -254,16 +231,9 @@ const ExpensesPage = () => {
                     <button
                       key={`${m.year}-${m.month}`}
                       onClick={() => handlePickMonth(m.year, m.month)}
-                      style={{
-                        width: "100%",
-                        textAlign: "left",
-                        padding: "10px 12px",
-                        borderRadius: 10,
-                        border: "none",
-                        cursor: "pointer",
-                        background: isActive ? "#eef2ff" : "transparent",
-                        fontWeight: isActive ? 700 : 500,
-                      }}
+                      className={`month-dropdown-item ${
+                        isActive ? "active" : ""
+                      }`}
                     >
                       {m.label}
                     </button>
@@ -277,22 +247,13 @@ const ExpensesPage = () => {
             {headerTotalValue === 0 ? `$${headerTotal}` : `-$${headerTotal}`}
           </span>
 
-          <div style={{ marginLeft: "auto", display: "flex", gap: 8 }}>
+          <div className="view-toggle-wrap">
             <button
               onClick={() => handleToggleView("month")}
               aria-pressed={viewMode === "month"}
-              style={{
-                padding: "8px 12px",
-                borderRadius: 999,
-                border: "1px solid rgba(255,255,255,0.25)",
-                background:
-                  viewMode === "month"
-                    ? "rgba(255,255,255,0.15)"
-                    : "transparent",
-                color: "white",
-                fontWeight: 600,
-                cursor: "pointer",
-              }}
+              className={`view-toggle-btn ${
+                viewMode === "month" ? "active" : ""
+              }`}
               title="Show monthly chart"
             >
               Month
@@ -300,18 +261,9 @@ const ExpensesPage = () => {
             <button
               onClick={() => handleToggleView("year")}
               aria-pressed={viewMode === "year"}
-              style={{
-                padding: "8px 12px",
-                borderRadius: 999,
-                border: "1px solid rgba(255,255,255,0.25)",
-                background:
-                  viewMode === "year"
-                    ? "rgba(255,255,255,0.15)"
-                    : "transparent",
-                color: "white",
-                fontWeight: 600,
-                cursor: "pointer",
-              }}
+              className={`view-toggle-btn ${
+                viewMode === "year" ? "active" : ""
+              }`}
               title="Show yearly chart"
             >
               Year
@@ -324,7 +276,7 @@ const ExpensesPage = () => {
             <DonutChart data={chartData} total={total} mode={viewMode} />
           </div>
         ) : (
-          <div style={{ opacity: 0.7, padding: "16px 0" }}>
+          <div className="expenses-no-data">
             No data for the selected period.
           </div>
         )}
@@ -341,13 +293,15 @@ const ExpensesPage = () => {
                   >
                     {cat.icon}
                   </span>
-                  <div style={{ flex: 1 }}>
-                    <div style={{ fontWeight: 700 }}>{cat.label}</div>
-                    <div style={{ fontSize: 14, opacity: 0.7 }}>
+                  <div className="expenses-transaction-info">
+                    <div className="expenses-transaction-label">
+                      {cat.label}
+                    </div>
+                    <div className="expenses-transaction-count">
                       {cat.count} transaction{cat.count > 1 ? "s" : ""}
                     </div>
                   </div>
-                  <div style={{ fontWeight: 700, fontSize: 18 }}>
+                  <div className="expenses-transaction-amount">
                     -${cat.sum.toFixed(2)}
                   </div>
                 </div>

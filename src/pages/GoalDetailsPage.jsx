@@ -44,14 +44,7 @@ const GoalDetailsPage = () => {
       <SidebarMenu open={showMenu} onClose={() => setShowMenu(false)} />
       <div className="dashboard-center-wrap">
         <h1 className="dashboard-title">{goal.name}</h1>
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            margin: "32px 0",
-          }}
-        >
+        <div className="goal-details-chart-wrap">
           <svg width="140" height="140">
             <circle
               cx="70"
@@ -73,7 +66,7 @@ const GoalDetailsPage = () => {
                 2 * Math.PI * 60 * (1 - Math.min(percentage, 100) / 100)
               }
               strokeLinecap="round"
-              style={{ transition: "stroke-dashoffset 0.5s" }}
+              className="goal-details-progress-circle"
             />
             <text
               x="50%"
@@ -87,54 +80,27 @@ const GoalDetailsPage = () => {
               {percentage}%
             </text>
           </svg>
-          <div style={{ color: "#fff", marginTop: 16, fontSize: 18 }}>
+          <div className="goal-details-progress-text">
             ${goal.current || 0} / ${goal.target}
           </div>
-          <div style={{ color: "#7c6ee6", marginTop: 4 }}>
+          <div className="goal-details-remaining">
             {goal.target - (goal.current || 0) > 0
               ? `$${goal.target - (goal.current || 0)} left`
               : "Goal reached!"}
           </div>
         </div>
 
-        <form
-          onSubmit={handleAdd}
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            gap: 12,
-          }}
-        >
+        <form onSubmit={handleAdd} className="goal-details-form">
           <input
             type="number"
             placeholder="Add amount"
             value={amount}
             onChange={(e) => setAmount(e.target.value)}
             min="1"
-            style={{
-              padding: "10px 16px",
-              borderRadius: 8,
-              border: "none",
-              fontSize: 18,
-              width: 180,
-              marginBottom: 8,
-            }}
+            className="goal-details-input"
             required
           />
-          <button
-            type="submit"
-            style={{
-              background: "#a682ff",
-              color: "#fff",
-              border: "none",
-              borderRadius: 10,
-              padding: "12px 32px",
-              fontSize: 18,
-              fontWeight: 600,
-              cursor: "pointer",
-            }}
-          >
+          <button type="submit" className="goal-details-submit-btn">
             Add
           </button>
         </form>

@@ -31,13 +31,13 @@
   display: flex;
   align-items: center;
   background-color: #e3e3e3;
-  padding: 10px 16px;
+  padding: 10px 20px;
   border-radius: 16px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 .transaction-icon {
   font-size: 20px;
-  margin-right: 16px;
+  margin-right: 20px;
 }
 .transaction-info {
   flex: 1;
@@ -167,4 +167,34 @@
   border-radius: 10px;
   cursor: pointer;
   flex: 1;
+}
+
+.transactions-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.transactions-empty {
+  color: #bcb6f6;
+  text-align: center;
+}
+
+.category-title-count {
+  font-size: 18px;
+  color: #bcb6f6;
+  margin-left: 12px;
+}
+
+.category-transaction-icon {
+  font-size: 36px;
+  background: #18181b;
+  border-radius: 50%;
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 16px;
 }

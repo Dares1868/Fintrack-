@@ -30,15 +30,6 @@ const Dashboard = () => {
     }
   }, [navigate]);
 
-  const handleAddBalance = () => {
-    const amount = prompt("Enter amount to add:");
-    if (amount && !isNaN(amount)) {
-      const newBalance = user.balance + parseFloat(amount);
-      setUser({ ...user, balance: newBalance });
-      saveUserBalance(newBalance);
-    }
-  };
-
   return (
     <div className="dashboard-gradient-bg">
       <button className="burger-btn" onClick={() => setShowMenu(!showMenu)}>
@@ -49,9 +40,6 @@ const Dashboard = () => {
       <div className="balance-card">
         <div>
           <span>My balance</span>
-          <button className="plus-btn" onClick={handleAddBalance}>
-            +
-          </button>
         </div>
         <div className="balance-amount">${user.balance.toFixed(2)}</div>
         <div className="card-details">

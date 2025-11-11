@@ -14,7 +14,7 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  color: inherit;
+  color: white;
 }
 
 .expenses-title .caret {
@@ -113,7 +113,7 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  border-radius: 10px;
+  border-radius: 50%;
   color: white;
   font-size: 20px;
 }
@@ -144,4 +144,68 @@
 .transaction-meta {
   font-size: 14px;
   opacity: 0.7;
+}
+
+.expenses-title-caret {
+  font-size: 16px;
+  opacity: 0.8;
+}
+
+.month-dropdown-item {
+  width: 100%;
+  text-align: left;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  background: transparent;
+  font-weight: 500;
+}
+
+.month-dropdown-item.active {
+  background: #eef2ff;
+  font-weight: 700;
+}
+
+.view-toggle-wrap {
+  margin-left: auto;
+  display: flex;
+  gap: 8px;
+}
+
+.view-toggle-btn {
+  padding: 8px 12px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  background: transparent;
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.view-toggle-btn.active {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.expenses-no-data {
+  opacity: 0.7;
+  padding: 16px 0;
+}
+
+.expenses-transaction-info {
+  flex: 1;
+}
+
+.expenses-transaction-label {
+  font-weight: 700;
+}
+
+.expenses-transaction-count {
+  font-size: 14px;
+  opacity: 0.7;
+}
+
+.expenses-transaction-amount {
+  font-weight: 700;
+  font-size: 18px;
 }

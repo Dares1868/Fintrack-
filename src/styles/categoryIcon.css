@@ -1,0 +1,49 @@
+.category-icon {
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  flex-shrink: 0;
+  margin-right: 17px;
+}
+
+.category-icon-utilities {
+  background: #4b7be3;
+}
+
+.category-icon-education {
+  background: #ff8c00;
+}
+
+.category-icon-entertainment {
+  background: #ff00c3;
+}
+
+.category-icon-food {
+  background: #4be36a;
+}
+
+.category-icon-health {
+  background: #ff5e5e;
+}
+
+.category-icon-other {
+  background: #9ca3af;
+}
+
+.category-icon-shopping {
+  background: #ffd600;
+}
+
+.category-icon-transport {
+  background: #00cfff;
+}
+
+.category-icon-travel {
+  background: #a682ff;
+}
+
+.category-icon-default {
+  background: #18181b;
+}

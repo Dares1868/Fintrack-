@@ -161,3 +161,52 @@
   color: #555;
   margin-top: 6px;
 }
+
+.goal-details-chart-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 32px 0;
+}
+
+.goal-details-progress-text {
+  color: #fff;
+  margin-top: 16px;
+  font-size: 18px;
+}
+
+.goal-details-remaining {
+  color: #7c6ee6;
+  margin-top: 4px;
+}
+
+.goal-details-form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.goal-details-input {
+  padding: 10px 16px;
+  border-radius: 8px;
+  border: none;
+  font-size: 18px;
+  width: 180px;
+  margin-bottom: 8px;
+}
+
+.goal-details-submit-btn {
+  background: #a682ff;
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  padding: 12px 32px;
+  font-size: 18px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.goal-details-progress-circle {
+  transition: stroke-dashoffset 0.5s;
+}
