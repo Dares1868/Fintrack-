@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import SidebarMenu from "../components/ui/SidebarMenu";
 import DonutChart from "../components/ui/DonutChart1";
-import { loadTransactions } from "../utils/storage/transactionsStorage";
+import { getExpenses } from "../services/expenseService";
 import "../styles/expenses.css";
 
 const CATEGORY_COLORS = {
@@ -66,6 +66,8 @@ const ExpensesPage = () => {
   const navigate = useNavigate();
   const [showMenu, setShowMenu] = useState(false);
   const [transactions, setTransactions] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   const [selectedMonth, setSelectedMonth] = useState(null);
   const [selectedYear, setSelectedYear] = useState(null);
@@ -74,11 +76,33 @@ const ExpensesPage = () => {
   const [isMonthMenuOpen, setIsMonthMenuOpen] = useState(false);
   const menuRef = useRef(null);
 
+  // Fetch all expenses on mount
   useEffect(() => {
-    const allTx = loadTransactions() || [];
-    const expenses = allTx.filter((t) => t.amount < 0);
-    setTransactions(expenses);
-  }, []);
+    const fetchExpenses = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+
+        const expenses = await getExpenses();
+        setTransactions(expenses);
+      } catch (err) {
+        console.error("Error loading expenses:", err);
+
+        // Redirect to login if not authenticated
+        if (err.status === 401) {
+          navigate("/");
+          return;
+        }
+
+        setError("Failed to load expenses. Please try again.");
+        setTransactions([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchExpenses();
+  }, [navigate]);
 
   const availableMonths = useMemo(() => {
     const setKey = new Set();
@@ -194,6 +218,42 @@ const ExpensesPage = () => {
   };
 
   const handleToggleView = (mode) => setViewMode(mode);
+
+  if (loading) {
+    return (
+      <div className="dashboard-gradient-bg">
+        <button className="burger-btn" onClick={() => setShowMenu(true)}>
+          ☰
+        </button>
+        <button onClick={() => navigate("/app/dashboard")} className="back-btn">
+          ←
+        </button>
+        <SidebarMenu open={showMenu} onClose={() => setShowMenu(false)} />
+        <div className="dashboard-center-wrap">
+          <div className="expenses-no-data">Loading expenses...</div>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="dashboard-gradient-bg">
+        <button className="burger-btn" onClick={() => setShowMenu(true)}>
+          ☰
+        </button>
+        <button onClick={() => navigate("/app/dashboard")} className="back-btn">
+          ←
+        </button>
+        <SidebarMenu open={showMenu} onClose={() => setShowMenu(false)} />
+        <div className="dashboard-center-wrap">
+          <div className="expenses-no-data" style={{ color: "#FF5E5E" }}>
+            {error}
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="dashboard-gradient-bg">

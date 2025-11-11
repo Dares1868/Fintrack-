@@ -61,6 +61,13 @@ const TransactionsPage = () => {
         setTransactions(dbTransactions);
       } catch (err) {
         console.error("Error loading transactions:", err);
+
+        // Redirect to login if not authenticated
+        if (err.status === 401) {
+          navigate("/");
+          return;
+        }
+
         setError("Failed to load transactions. Please try again.");
         setTransactions([]);
       } finally {
@@ -69,7 +76,7 @@ const TransactionsPage = () => {
     };
 
     fetchTransactions();
-  }, []);
+  }, [navigate]);
 
   const filtered = transactions.filter((t) => {
     if (filter === "all") return true;
@@ -111,16 +118,31 @@ const TransactionsPage = () => {
     try {
       // Save to backend
       const createdTransaction = await createTransaction(newTx);
-      
+
       // Update local state with the new transaction
       const updated = [createdTransaction, ...transactions];
       setTransactions(updated);
-      
+
       setShowModal(false);
     } catch (err) {
       console.error("Error saving transaction:", err);
+
+      // Redirect to login if not authenticated
+      if (err.status === 401) {
+        navigate("/");
+        return;
+      }
+
       alert("Failed to save transaction. Please try again.");
     }
+  };
+
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
+    return `${year}-${month}-${day}`;
   };
 
   const date = new Date();
@@ -202,7 +224,7 @@ const TransactionsPage = () => {
                 <CategoryIcon category={t.category} size={40} />
                 <div className="transaction-info">
                   <span className="transaction-name">{t.name}</span>
-                  <span className="transaction-date">{t.date}</span>
+                  <span className="transaction-date">{formatDate(t.date)}</span>
                 </div>
                 <span
                   className={`transaction-amount ${

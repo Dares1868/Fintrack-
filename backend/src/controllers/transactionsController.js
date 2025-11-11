@@ -34,7 +34,9 @@ exports.createTransaction = async (req, res) => {
     }
 
     if (!["income", "expense"].includes(type)) {
-      return res.status(400).json({ error: "Type must be 'income' or 'expense'" });
+      return res
+        .status(400)
+        .json({ error: "Type must be 'income' or 'expense'" });
     }
 
     if (isNaN(amount)) {
@@ -79,24 +81,31 @@ exports.migrateTransactions = async (req, res) => {
 
     // Check if user already has transactions
     const existingTransactions = await Transaction.findByUserId(userId);
-    
+
     if (existingTransactions.length > 0) {
-      return res.status(400).json({ 
+      return res.status(400).json({
         error: "User already has transactions in database",
-        message: "Migration already completed"
+        message: "Migration already completed",
       });
     }
 
     if (transactions.length === 0) {
-      return res.json({ 
+      return res.json({
         message: "No transactions to migrate",
-        transactions: []
+        transactions: [],
       });
     }
 
     // Validate and prepare transactions
     const validTransactions = transactions
-      .filter((tx) => tx.name && tx.category && tx.type && tx.amount !== undefined && tx.date)
+      .filter(
+        (tx) =>
+          tx.name &&
+          tx.category &&
+          tx.type &&
+          tx.amount !== undefined &&
+          tx.date
+      )
       .map((tx) => ({
         name: tx.name.trim(),
         category: tx.category.toLowerCase().trim(),
@@ -106,10 +115,15 @@ exports.migrateTransactions = async (req, res) => {
       }));
 
     if (validTransactions.length === 0) {
-      return res.status(400).json({ error: "No valid transactions to migrate" });
+      return res
+        .status(400)
+        .json({ error: "No valid transactions to migrate" });
     }
 
-    const migratedTransactions = await Transaction.createMany(userId, validTransactions);
+    const migratedTransactions = await Transaction.createMany(
+      userId,
+      validTransactions
+    );
 
     res.status(201).json({
       message: `Successfully migrated ${validTransactions.length} transactions`,

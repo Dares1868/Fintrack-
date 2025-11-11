@@ -13,7 +13,10 @@ export const getTransactions = async () => {
 
     if (!response.ok) {
       const error = await response.json();
-      throw new Error(error.error || "Failed to fetch transactions");
+      const errorMessage = error.error || "Failed to fetch transactions";
+      const errorObj = new Error(errorMessage);
+      errorObj.status = response.status;
+      throw errorObj;
     }
 
     const data = await response.json();
@@ -38,7 +41,10 @@ export const createTransaction = async (transactionData) => {
 
     if (!response.ok) {
       const error = await response.json();
-      throw new Error(error.error || "Failed to create transaction");
+      const errorMessage = error.error || "Failed to create transaction";
+      const errorObj = new Error(errorMessage);
+      errorObj.status = response.status;
+      throw errorObj;
     }
 
     const data = await response.json();

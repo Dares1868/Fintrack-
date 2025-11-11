@@ -52,7 +52,9 @@ class Transaction {
       tx.date,
     ]);
 
-    const placeholders = transactions.map(() => "(?, ?, ?, ?, ?, ?)").join(", ");
+    const placeholders = transactions
+      .map(() => "(?, ?, ?, ?, ?, ?)")
+      .join(", ");
 
     await db.query(
       `INSERT INTO transactions (user_id, name, category, type, amount, date) 

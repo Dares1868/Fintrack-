@@ -1,21 +1,70 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import SidebarMenu from "../components/ui/SidebarMenu";
+import { getExpenses } from "../services/expenseService";
 import "../styles/transactions.css";
 
 const CategoryTransactionsPage = () => {
   const { category } = useParams();
   const navigate = useNavigate();
   const [transactions, setTransactions] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    const txs = JSON.parse(localStorage.getItem("transactions") || "[]");
-    setTransactions(txs.filter((t) => t.category === category));
-  }, [category]);
+    const fetchCategoryTransactions = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+
+        // Fetch expenses filtered by category
+        const expenses = await getExpenses({ category });
+        setTransactions(expenses);
+      } catch (err) {
+        console.error("Error loading category transactions:", err);
+
+        // Redirect to login if not authenticated
+        if (err.status === 401) {
+          navigate("/");
+          return;
+        }
+
+        setError("Failed to load transactions. Please try again.");
+        setTransactions([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchCategoryTransactions();
+  }, [category, navigate]);
 
   const sortedTransactions = [...transactions].sort(
     (a, b) => new Date(b.date) - new Date(a.date)
   );
+
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
+    return `${year}-${month}-${day}`;
+  };
+
+  const getCategoryIcon = (categoryName) => {
+    const icons = {
+      utilities: "📄",
+      education: "🎓",
+      entertainment: "🎬",
+      food: "🍴",
+      health: "❤️",
+      other: "💡",
+      shopping: "🛒",
+      transport: "🚗",
+      travel: "✈️",
+    };
+    return icons[categoryName?.toLowerCase()] || "💡";
+  };
 
   return (
     <div className="dashboard-gradient-bg">
@@ -31,29 +80,37 @@ const CategoryTransactionsPage = () => {
             {transactions.length !== 1 ? "s" : ""}
           </span>
         </h1>
-        <div className="transactions-list">
-          {sortedTransactions.length === 0 ? (
-            <div className="transactions-empty">No transactions</div>
-          ) : (
-            sortedTransactions.map((t, i) => (
-              <div className="transaction-card" key={i}>
-                <span className="category-transaction-icon">{t.icon}</span>
-                <div className="transaction-info">
-                  <span className="transaction-name">{t.name}</span>
-                  <span className="transaction-date">{t.date}</span>
+
+        {loading ? (
+          <div className="transactions-empty">Loading...</div>
+        ) : error ? (
+          <div className="transactions-empty" style={{ color: "#FF5E5E" }}>
+            {error}
+          </div>
+        ) : (
+          <div className="transactions-list">
+            {sortedTransactions.length === 0 ? (
+              <div className="transactions-empty">No transactions</div>
+            ) : (
+              sortedTransactions.map((t, i) => (
+                <div className="transaction-card" key={t.id || i}>
+                  <span className="category-transaction-icon">
+                    {getCategoryIcon(t.category)}
+                  </span>
+                  <div className="transaction-info">
+                    <span className="transaction-name">{t.name}</span>
+                    <span className="transaction-date">
+                      {formatDate(t.date)}
+                    </span>
+                  </div>
+                  <span className="transaction-amount expense">
+                    -${Math.abs(t.amount).toFixed(2)}
+                  </span>
                 </div>
-                <span
-                  className={`transaction-amount ${
-                    t.amount > 0 ? "income" : "expense"
-                  }`}
-                >
-                  {t.amount > 0 ? "+" : ""}
-                  {Math.abs(t.amount).toFixed(2)}$
-                </span>
-              </div>
-            ))
-          )}
-        </div>
+              ))
+            )}
+          </div>
+        )}
       </div>
     </div>
   );
