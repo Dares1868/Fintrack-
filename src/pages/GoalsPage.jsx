@@ -33,6 +33,8 @@ const GoalsPage = () => {
   const [showMenu, setShowMenu] = useState(false);
   const [goals, setGoals] = useState([]);
   const [showModal, setShowModal] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [goalToDelete, setGoalToDelete] = useState(null);
 
   const [form, setForm] = useState({
     name: "",
@@ -139,25 +141,34 @@ const GoalsPage = () => {
     }
   };
 
-  const handleDeleteGoal = async (goalIndex, e) => {
+  const handleDeleteGoal = (goalIndex, e) => {
     if (e && typeof e.stopPropagation === "function") e.stopPropagation();
 
-    const confirmDelete = window.confirm(
-      "Are you sure you want to delete this goal?"
-    );
-    if (!confirmDelete) return;
+    const goal = goals[goalIndex];
+    if (!goal || !goal.id) return;
 
-    const goalToDelete = goals[goalIndex];
-    if (!goalToDelete || !goalToDelete.id) return;
+    setGoalToDelete({ goal, index: goalIndex });
+    setShowDeleteModal(true);
+  };
+
+  const confirmDeleteGoal = async () => {
+    if (!goalToDelete) return;
 
     try {
-      await goalService.deleteGoal(goalToDelete.id);
-      const updated = goals.filter((_, index) => index !== goalIndex);
+      await goalService.deleteGoal(goalToDelete.goal.id);
+      const updated = goals.filter((_, index) => index !== goalToDelete.index);
       setGoals(updated);
+      setShowDeleteModal(false);
+      setGoalToDelete(null);
     } catch (error) {
       console.error("Error deleting goal:", error);
       alert("Failed to delete goal. Please try again.");
     }
+  };
+
+  const cancelDeleteGoal = () => {
+    setShowDeleteModal(false);
+    setGoalToDelete(null);
   };
 
   return (
@@ -403,6 +414,32 @@ const GoalsPage = () => {
                 </button>
               </div>
             </form>
+          </div>
+        )}
+
+        {showDeleteModal && goalToDelete && (
+          <div className="transaction-modal">
+            <div className="delete-modal-content">
+              <h2>Delete Goal</h2>
+              <p>Are you sure you want to delete "{goalToDelete.goal.name}"?</p>
+              <p className="delete-warning">This action cannot be undone.</p>
+              <div className="transaction-modal-buttons">
+                <button
+                  type="button"
+                  className="delete-confirm-btn"
+                  onClick={confirmDeleteGoal}
+                >
+                  Delete
+                </button>
+                <button
+                  type="button"
+                  className="secondary-btn"
+                  onClick={cancelDeleteGoal}
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
           </div>
         )}
       </div>

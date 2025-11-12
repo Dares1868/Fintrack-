@@ -14,6 +14,7 @@ const GoalDetailsPage = () => {
   const [amount, setAmount] = useState("");
   const [showMenu, setShowMenu] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
 
   useEffect(() => {
     const fetchGoal = async () => {
@@ -70,12 +71,11 @@ const GoalDetailsPage = () => {
     }
   };
 
-  const handleDelete = async () => {
-    const confirmDelete = window.confirm(
-      "Are you sure you want to delete this goal? This action cannot be undone."
-    );
-    if (!confirmDelete) return;
+  const handleDelete = () => {
+    setShowDeleteModal(true);
+  };
 
+  const confirmDelete = async () => {
     try {
       await goalService.deleteGoal(goal.id);
       navigate("/app/goals");
@@ -83,6 +83,10 @@ const GoalDetailsPage = () => {
       console.error("Error deleting goal:", error);
       alert("Failed to delete goal. Please try again.");
     }
+  };
+
+  const cancelDelete = () => {
+    setShowDeleteModal(false);
   };
 
   const calculateDaysRemaining = () => {
@@ -238,6 +242,32 @@ const GoalDetailsPage = () => {
               Add
             </button>
           </form>
+        )}
+
+        {showDeleteModal && (
+          <div className="transaction-modal">
+            <div className="delete-modal-content">
+              <h2>Delete Goal</h2>
+              <p>Are you sure you want to delete "{goal.name}"?</p>
+              <p className="delete-warning">This action cannot be undone.</p>
+              <div className="transaction-modal-buttons">
+                <button
+                  type="button"
+                  className="delete-confirm-btn"
+                  onClick={confirmDelete}
+                >
+                  Delete
+                </button>
+                <button
+                  type="button"
+                  className="secondary-btn"
+                  onClick={cancelDelete}
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </div>
         )}
       </div>
     </div>
