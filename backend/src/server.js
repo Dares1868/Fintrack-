@@ -3,9 +3,11 @@ const cors = require("cors");
 const session = require("express-session");
 require("dotenv").config();
 
+const { initializeDatabase } = require("./config/database");
 const authRoutes = require("./routes/authRoutes");
 const transactionsRoutes = require("./routes/transactionsRoutes");
 const expensesRoutes = require("./routes/expensesRoutes");
+const goalsRoutes = require("./routes/goalsRoutes");
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -39,6 +41,7 @@ app.use(
 app.use("/api/auth", authRoutes);
 app.use("/api/transactions", transactionsRoutes);
 app.use("/api/expenses", expensesRoutes);
+app.use("/api/goals", goalsRoutes);
 
 // Health check endpoint
 app.get("/health", (req, res) => {
@@ -56,8 +59,21 @@ app.use("*", (req, res) => {
   res.status(404).json({ error: "Route not found" });
 });
 
-app.listen(PORT, "0.0.0.0", () => {
-  console.log(`Server is running on http://0.0.0.0:${PORT}`);
-});
+// Initialize database and start server
+const startServer = async () => {
+  try {
+    await initializeDatabase();
+    console.log("Database initialized successfully");
+
+    app.listen(PORT, "0.0.0.0", () => {
+      console.log(`Server is running on http://0.0.0.0:${PORT}`);
+    });
+  } catch (error) {
+    console.error("Failed to start server:", error);
+    process.exit(1);
+  }
+};
+
+startServer();
 
 module.exports = app;

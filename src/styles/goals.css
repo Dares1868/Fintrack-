@@ -210,3 +210,187 @@
 .goal-details-progress-circle {
   transition: stroke-dashoffset 0.5s;
 }
+
+/* Status badges on goal cards */
+.goal-category {
+  font-size: 13px;
+  color: #666;
+  margin-bottom: 4px;
+}
+
+.goal-target-date {
+  font-size: 12px;
+  color: #888;
+}
+
+.goal-bottom-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 10px;
+  flex-wrap: wrap;
+}
+
+.goal-status-badge {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+.status-active {
+  background: #e3f2fd;
+  color: #1976d2;
+}
+
+.status-achieved {
+  background: #e8f5e9;
+  color: #388e3c;
+}
+
+.status-cancelled {
+  background: #f5f5f5;
+  color: #757575;
+}
+
+/* Goal details page header */
+.goal-details-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.goal-details-delete-btn {
+  background: #ff5252;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 20px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.goal-details-delete-btn:hover {
+  background: #ff1744;
+}
+
+/* Goal description */
+.goal-description {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 20px;
+}
+
+.goal-description p {
+  color: #fff;
+  font-size: 15px;
+  line-height: 1.5;
+  margin: 0;
+}
+
+/* Info cards grid */
+.goal-details-info-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.goal-info-card {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.goal-info-label {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.7);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.goal-info-value {
+  font-size: 16px;
+  color: #fff;
+  font-weight: 600;
+}
+
+.goal-days-remaining {
+  font-size: 13px;
+  color: #a682ff;
+  margin-top: 4px;
+}
+
+.goal-days-remaining.overdue {
+  color: #ff5252;
+}
+
+/* Status select dropdown */
+.goal-status-select {
+  background: rgba(255, 255, 255, 0.9);
+  border: none;
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  text-transform: capitalize;
+  outline: none;
+  transition: background 0.2s;
+}
+
+.goal-status-select.status-active {
+  color: #1976d2;
+}
+
+.goal-status-select.status-achieved {
+  color: #388e3c;
+}
+
+.goal-status-select.status-cancelled {
+  color: #757575;
+}
+
+.goal-status-select:hover {
+  background: rgba(255, 255, 255, 1);
+}
+
+/* Modal textarea styling */
+.transaction-modal-content textarea {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-family: inherit;
+  font-size: 14px;
+  resize: vertical;
+  box-sizing: border-box;
+}
+
+.transaction-modal-content textarea:focus {
+  outline: none;
+  border-color: #a682ff;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .goal-details-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .goal-details-info-cards {
+    grid-template-columns: 1fr;
+  }
+}

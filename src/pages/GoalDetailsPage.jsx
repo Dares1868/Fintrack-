@@ -3,7 +3,9 @@ import { useEffect, useState } from "react";
 import SidebarMenu from "../components/ui/SidebarMenu";
 import "../styles/dashboard.css";
 import "../styles/goals.css";
-import { getGoals, saveGoals } from "../utils/storage/goalsStorage";
+import * as goalService from "../services/goalService";
+
+const statusOptions = ["active", "achieved", "cancelled"];
 
 const GoalDetailsPage = () => {
   const { id } = useParams();
@@ -11,27 +13,88 @@ const GoalDetailsPage = () => {
   const [goal, setGoal] = useState(null);
   const [amount, setAmount] = useState("");
   const [showMenu, setShowMenu] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const goals = getGoals();
-    setGoal(goals[id]);
-  }, [id]);
+    const fetchGoal = async () => {
+      try {
+        const goalData = await goalService.getGoalById(id);
+        setGoal(goalData);
+      } catch (error) {
+        console.error("Error fetching goal:", error);
+        if (error.status === 401) {
+          navigate("/");
+        } else if (error.status === 404) {
+          navigate("/app/goals");
+        }
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchGoal();
+  }, [id, navigate]);
 
+  if (loading) return <div>Loading...</div>;
   if (!goal) return null;
 
   const percentage = goal.target
     ? Math.round(((goal.current || 0) / goal.target) * 100)
     : 0;
 
-  const handleAdd = (e) => {
+  const handleAdd = async (e) => {
     e.preventDefault();
     if (!amount || isNaN(amount) || amount <= 0) return;
-    const goals = getGoals();
-    goals[id].current = (goals[id].current || 0) + Number(amount);
-    saveGoals(goals);
-    setGoal(goals[id]);
-    setAmount("");
+
+    try {
+      const updatedGoal = await goalService.addAmountToGoal(
+        goal.id,
+        parseFloat(amount)
+      );
+      setGoal(updatedGoal);
+      setAmount("");
+    } catch (error) {
+      console.error("Error adding amount:", error);
+      alert("Failed to add amount. Please try again.");
+    }
   };
+
+  const handleStatusChange = async (newStatus) => {
+    try {
+      const updatedGoal = await goalService.updateGoal(goal.id, {
+        status: newStatus,
+      });
+      setGoal(updatedGoal);
+    } catch (error) {
+      console.error("Error updating status:", error);
+      alert("Failed to update status. Please try again.");
+    }
+  };
+
+  const handleDelete = async () => {
+    const confirmDelete = window.confirm(
+      "Are you sure you want to delete this goal? This action cannot be undone."
+    );
+    if (!confirmDelete) return;
+
+    try {
+      await goalService.deleteGoal(goal.id);
+      navigate("/app/goals");
+    } catch (error) {
+      console.error("Error deleting goal:", error);
+      alert("Failed to delete goal. Please try again.");
+    }
+  };
+
+  const calculateDaysRemaining = () => {
+    if (!goal.targetDate) return null;
+    const target = new Date(goal.targetDate);
+    const today = new Date();
+    const diffTime = target - today;
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    return diffDays;
+  };
+
+  const daysRemaining = calculateDaysRemaining();
 
   return (
     <div className="dashboard-gradient-bg">
@@ -42,8 +105,69 @@ const GoalDetailsPage = () => {
         ☰
       </button>
       <SidebarMenu open={showMenu} onClose={() => setShowMenu(false)} />
+
       <div className="dashboard-center-wrap">
-        <h1 className="dashboard-title">{goal.name}</h1>
+        <div className="goal-details-header">
+          <h1 className="dashboard-title">{goal.name}</h1>
+          <button className="goal-details-delete-btn" onClick={handleDelete}>
+            Delete
+          </button>
+        </div>
+
+        {goal.description && (
+          <div className="goal-description">
+            <p>{goal.description}</p>
+          </div>
+        )}
+
+        <div className="goal-details-info-cards">
+          {goal.categoryName && (
+            <div className="goal-info-card">
+              <span className="goal-info-label">Category</span>
+              <span className="goal-info-value">
+                {goal.icon} {goal.categoryName}
+              </span>
+            </div>
+          )}
+
+          {goal.targetDate && (
+            <div className="goal-info-card">
+              <span className="goal-info-label">Target Date</span>
+              <span className="goal-info-value">
+                {new Date(goal.targetDate).toLocaleDateString()}
+              </span>
+              {daysRemaining !== null && (
+                <span
+                  className={`goal-days-remaining ${
+                    daysRemaining < 0 ? "overdue" : ""
+                  }`}
+                >
+                  {daysRemaining < 0
+                    ? `${Math.abs(daysRemaining)} days overdue`
+                    : daysRemaining === 0
+                    ? "Due today!"
+                    : `${daysRemaining} days left`}
+                </span>
+              )}
+            </div>
+          )}
+
+          <div className="goal-info-card">
+            <span className="goal-info-label">Status</span>
+            <select
+              className={`goal-status-select status-${goal.status || "active"}`}
+              value={goal.status || "active"}
+              onChange={(e) => handleStatusChange(e.target.value)}
+            >
+              {statusOptions.map((status) => (
+                <option key={status} value={status}>
+                  {status.charAt(0).toUpperCase() + status.slice(1)}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
+
         <div className="goal-details-chart-wrap">
           <svg width="140" height="140">
             <circle
@@ -58,7 +182,13 @@ const GoalDetailsPage = () => {
               cx="70"
               cy="70"
               r="60"
-              stroke="#a682ff"
+              stroke={
+                goal.status === "achieved"
+                  ? "#27ae60"
+                  : goal.status === "cancelled"
+                  ? "#95a5a6"
+                  : "#a682ff"
+              }
               strokeWidth="12"
               fill="none"
               strokeDasharray={2 * Math.PI * 60}
@@ -85,25 +215,30 @@ const GoalDetailsPage = () => {
           </div>
           <div className="goal-details-remaining">
             {goal.target - (goal.current || 0) > 0
-              ? `$${goal.target - (goal.current || 0)} left`
-              : "Goal reached!"}
+              ? `$${(goal.target - (goal.current || 0)).toFixed(2)} left`
+              : goal.status === "achieved"
+              ? "🎉 Goal achieved!"
+              : "Target reached!"}
           </div>
         </div>
 
-        <form onSubmit={handleAdd} className="goal-details-form">
-          <input
-            type="number"
-            placeholder="Add amount"
-            value={amount}
-            onChange={(e) => setAmount(e.target.value)}
-            min="1"
-            className="goal-details-input"
-            required
-          />
-          <button type="submit" className="goal-details-submit-btn">
-            Add
-          </button>
-        </form>
+        {goal.status !== "cancelled" && (
+          <form onSubmit={handleAdd} className="goal-details-form">
+            <input
+              type="number"
+              placeholder="Add amount"
+              value={amount}
+              onChange={(e) => setAmount(e.target.value)}
+              min="1"
+              step="0.01"
+              className="goal-details-input"
+              required
+            />
+            <button type="submit" className="goal-details-submit-btn">
+              Add
+            </button>
+          </form>
+        )}
       </div>
     </div>
   );

@@ -3,17 +3,30 @@ import { useNavigate } from "react-router-dom";
 import SidebarMenu from "../components/ui/SidebarMenu";
 import "../styles/dashboard.css";
 import "../styles/goals.css";
-import { getGoals, saveGoals } from "../utils/storage/goalsStorage";
+import * as goalService from "../services/goalService";
 
-const categoryOptions = [
-  { name: "Transport", icon: "🚗", color: "#4B9CD3" },
-  { name: "Home", icon: "🏠", color: "#7CFC00" },
-  { name: "Education", icon: "📚", color: "#9370DB" },
-  { name: "Entertainment", icon: "🎵", color: "#FF6347" },
-  { name: "Shopping", icon: "🛍️", color: "#FF69B4" },
-  { name: "Health", icon: "💊", color: "#FF4500" },
-  { name: "Other", icon: "💡", color: "#808080" },
-];
+const categoryGroups = {
+  "Short-Term Goals (0-12 months)": [
+    { name: "Vacation", icon: "✈️", color: "#3498db" },
+    { name: "Gadgets / Electronics", icon: "📱", color: "#9b59b6" },
+    { name: "Holiday Shopping", icon: "🎁", color: "#e74c3c" },
+    { name: "Emergency Buffer", icon: "🆘", color: "#e67e22" },
+  ],
+  "Mid-Term Goals (1-5 years)": [
+    { name: "Home Renovation", icon: "🏠", color: "#16a085" },
+    { name: "Car Purchase", icon: "🚗", color: "#2980b9" },
+    { name: "Wedding / Big Event", icon: "💒", color: "#f39c12" },
+    { name: "Education Fund", icon: "📚", color: "#8e44ad" },
+  ],
+  "Long-Term Goals (5+ years)": [
+    { name: "Retirement", icon: "🏖️", color: "#27ae60" },
+    { name: "Real Estate Down Payment", icon: "🏡", color: "#2c3e50" },
+    { name: "Investment Fund", icon: "📈", color: "#16a085" },
+  ],
+};
+
+const allCategories = Object.values(categoryGroups).flat();
+const statusOptions = ["active", "achieved", "cancelled"];
 
 const GoalsPage = () => {
   const navigate = useNavigate();
@@ -23,39 +36,110 @@ const GoalsPage = () => {
 
   const [form, setForm] = useState({
     name: "",
+    description: "",
     target: "",
-    category: categoryOptions[0],
+    targetDate: "",
+    category: allCategories[0],
+    status: "active",
+    isCustomCategory: false,
+    customCategoryName: "",
+    customIcon: "",
+    customColor: "#a682ff",
   });
 
   useEffect(() => {
-    setGoals(getGoals());
-  }, []);
+    const fetchGoals = async () => {
+      try {
+        const goalsData = await goalService.getGoals();
+        setGoals(goalsData);
+      } catch (error) {
+        console.error("Error fetching goals:", error);
+        if (error.status === 401) {
+          navigate("/");
+        }
+      }
+    };
+    fetchGoals();
+
+    // Refresh session periodically to prevent timeout
+    const sessionRefresh = setInterval(async () => {
+      try {
+        const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3001";
+        await fetch(`${API_URL}/health`, {
+          credentials: "include",
+        });
+      } catch (error) {
+        console.error("Session refresh failed:", error);
+      }
+    }, 10 * 60 * 1000); // Refresh every 10 minutes
+
+    return () => clearInterval(sessionRefresh);
+  }, [navigate]);
 
   const handleAddGoal = () => {
-    setForm({ name: "", target: "", category: categoryOptions[0] });
+    setForm({
+      name: "",
+      description: "",
+      target: "",
+      targetDate: "",
+      category: allCategories[0],
+      status: "active",
+      isCustomCategory: false,
+      customCategoryName: "",
+      customIcon: "",
+      customColor: "#a682ff",
+    });
     setShowModal(true);
   };
 
-  const handleFormSubmit = (e) => {
+  const handleFormSubmit = async (e) => {
     e.preventDefault();
     if (!form.name || !form.target || isNaN(form.target)) return;
 
-    const newGoal = {
+    // Validate custom category fields
+    if (form.isCustomCategory) {
+      if (!form.customCategoryName || !form.customIcon) {
+        alert("Please fill in custom category name and icon");
+        return;
+      }
+    }
+
+    const goalData = {
       name: form.name,
+      description: form.description,
       target: parseFloat(form.target),
-      icon: form.category.icon,
-      color: form.category.color,
-      current: 0,
+      targetDate: form.targetDate,
+      icon: form.isCustomCategory ? form.customIcon : form.category.icon,
+      color: form.isCustomCategory ? form.customColor : form.category.color,
+      categoryName: form.isCustomCategory
+        ? form.customCategoryName
+        : form.category.name,
+      status: form.status,
     };
 
-    const updatedGoals = [...goals, newGoal];
-    setGoals(updatedGoals);
-    saveGoals(updatedGoals);
-    setForm({ name: "", target: "", category: categoryOptions[0] });
-    setShowModal(false);
+    try {
+      const newGoal = await goalService.createGoal(goalData);
+      setGoals([...goals, newGoal]);
+      setForm({
+        name: "",
+        description: "",
+        target: "",
+        targetDate: "",
+        category: allCategories[0],
+        status: "active",
+        isCustomCategory: false,
+        customCategoryName: "",
+        customIcon: "",
+        customColor: "#a682ff",
+      });
+      setShowModal(false);
+    } catch (error) {
+      console.error("Error creating goal:", error);
+      alert("Failed to create goal. Please try again.");
+    }
   };
 
-  const handleDeleteGoal = (goalIndex, e) => {
+  const handleDeleteGoal = async (goalIndex, e) => {
     if (e && typeof e.stopPropagation === "function") e.stopPropagation();
 
     const confirmDelete = window.confirm(
@@ -63,12 +147,17 @@ const GoalsPage = () => {
     );
     if (!confirmDelete) return;
 
-    const updated = [...goals];
-    if (goalIndex < 0 || goalIndex >= updated.length) return;
+    const goalToDelete = goals[goalIndex];
+    if (!goalToDelete || !goalToDelete.id) return;
 
-    updated.splice(goalIndex, 1);
-    setGoals(updated);
-    saveGoals(updated);
+    try {
+      await goalService.deleteGoal(goalToDelete.id);
+      const updated = goals.filter((_, index) => index !== goalIndex);
+      setGoals(updated);
+    } catch (error) {
+      console.error("Error deleting goal:", error);
+      alert("Failed to delete goal. Please try again.");
+    }
   };
 
   return (
@@ -89,11 +178,19 @@ const GoalsPage = () => {
             const percentage = goal.target
               ? Math.min(100, (goal.current / goal.target) * 100)
               : 0;
+
+            const statusBadgeClass =
+              goal.status === "achieved"
+                ? "status-achieved"
+                : goal.status === "cancelled"
+                ? "status-cancelled"
+                : "status-active";
+
             return (
               <div
                 className="goal-card"
-                key={goal.name + idx}
-                onClick={() => navigate(`/app/goal/${idx}`)}
+                key={goal.id || goal.name + idx}
+                onClick={() => navigate(`/app/goal/${goal.id}`)}
                 style={{ cursor: "pointer" }}
               >
                 <div
@@ -125,6 +222,21 @@ const GoalsPage = () => {
                     <span>${goal.current || 0}</span>
                     <span>${goal.target}</span>
                   </div>
+                  <div className="goal-bottom-info">
+                    {goal.categoryName && (
+                      <div className="goal-category">
+                        {goal.icon} {goal.categoryName}
+                      </div>
+                    )}
+                    {goal.targetDate && (
+                      <div className="goal-target-date">
+                        📅 {new Date(goal.targetDate).toLocaleDateString()}
+                      </div>
+                    )}
+                    <div className={`goal-status-badge ${statusBadgeClass}`}>
+                      {goal.status || "active"}
+                    </div>
+                  </div>
                 </div>
               </div>
             );
@@ -154,6 +266,18 @@ const GoalsPage = () => {
               </label>
 
               <label>
+                Description
+                <textarea
+                  value={form.description}
+                  onChange={(e) =>
+                    setForm({ ...form, description: e.target.value })
+                  }
+                  rows="3"
+                  placeholder="What is this goal for?"
+                />
+              </label>
+
+              <label>
                 Target Amount
                 <input
                   type="number"
@@ -164,21 +288,103 @@ const GoalsPage = () => {
               </label>
 
               <label>
+                Target Date
+                <input
+                  type="date"
+                  value={form.targetDate}
+                  onChange={(e) =>
+                    setForm({ ...form, targetDate: e.target.value })
+                  }
+                />
+              </label>
+
+              <label>
                 Category
                 <select
-                  value={form.category.name}
-                  onChange={(e) =>
-                    setForm({
-                      ...form,
-                      category: categoryOptions.find(
-                        (opt) => opt.name === e.target.value
-                      ),
-                    })
-                  }
+                  value={form.isCustomCategory ? "custom" : form.category.name}
+                  onChange={(e) => {
+                    if (e.target.value === "custom") {
+                      setForm({
+                        ...form,
+                        isCustomCategory: true,
+                      });
+                    } else {
+                      setForm({
+                        ...form,
+                        isCustomCategory: false,
+                        category: allCategories.find(
+                          (opt) => opt.name === e.target.value
+                        ),
+                      });
+                    }
+                  }}
                 >
-                  {categoryOptions.map((opt) => (
-                    <option key={opt.name} value={opt.name}>
-                      {opt.icon} {opt.name}
+                  {Object.entries(categoryGroups).map(
+                    ([groupName, categories]) => (
+                      <optgroup key={groupName} label={groupName}>
+                        {categories.map((opt) => (
+                          <option key={opt.name} value={opt.name}>
+                            {opt.icon} {opt.name}
+                          </option>
+                        ))}
+                      </optgroup>
+                    )
+                  )}
+                  <option value="custom">✨ Custom Category</option>
+                </select>
+              </label>
+
+              {form.isCustomCategory && (
+                <>
+                  <label>
+                    Custom Category Name
+                    <input
+                      type="text"
+                      value={form.customCategoryName}
+                      onChange={(e) =>
+                        setForm({ ...form, customCategoryName: e.target.value })
+                      }
+                      placeholder="e.g., Business Trip"
+                      required
+                    />
+                  </label>
+
+                  <label>
+                    Custom Icon (Emoji)
+                    <input
+                      type="text"
+                      value={form.customIcon}
+                      onChange={(e) =>
+                        setForm({ ...form, customIcon: e.target.value })
+                      }
+                      placeholder="e.g., 💼"
+                      maxLength="2"
+                      required
+                    />
+                  </label>
+
+                  <label>
+                    Custom Color
+                    <input
+                      type="color"
+                      value={form.customColor}
+                      onChange={(e) =>
+                        setForm({ ...form, customColor: e.target.value })
+                      }
+                    />
+                  </label>
+                </>
+              )}
+
+              <label>
+                Status
+                <select
+                  value={form.status}
+                  onChange={(e) => setForm({ ...form, status: e.target.value })}
+                >
+                  {statusOptions.map((status) => (
+                    <option key={status} value={status}>
+                      {status.charAt(0).toUpperCase() + status.slice(1)}
                     </option>
                   ))}
                 </select>

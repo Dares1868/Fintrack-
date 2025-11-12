@@ -37,6 +37,20 @@ const CategoryTransactionsPage = () => {
     };
 
     fetchCategoryTransactions();
+
+    // Refresh session periodically to prevent timeout
+    const sessionRefresh = setInterval(async () => {
+      try {
+        const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3001";
+        await fetch(`${API_URL}/health`, {
+          credentials: "include",
+        });
+      } catch (error) {
+        console.error("Session refresh failed:", error);
+      }
+    }, 10 * 60 * 1000); // Refresh every 10 minutes
+
+    return () => clearInterval(sessionRefresh);
   }, [category, navigate]);
 
   const sortedTransactions = [...transactions].sort(
