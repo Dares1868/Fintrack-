@@ -67,6 +67,17 @@ CREATE TABLE IF NOT EXISTS goals (
   INDEX idx_status (status)
 );
 
+-- Create balance table
+CREATE TABLE IF NOT EXISTS balance (
+  id INT PRIMARY KEY AUTO_INCREMENT,
+  user_id INT NOT NULL UNIQUE,
+  current_amount DECIMAL(10,2) DEFAULT 0.00,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+  INDEX idx_user_id (user_id)
+);
+
 -- Insert default categories
 INSERT IGNORE INTO categories (user_id, name, color, icon) VALUES
 (1, 'Food & Dining', '#e74c3c', 'utensils'),

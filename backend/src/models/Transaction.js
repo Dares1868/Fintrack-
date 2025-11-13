@@ -1,4 +1,5 @@
 const { getPool } = require("../config/database");
+const Balance = require("./Balance");
 
 class Transaction {
   // Get all transactions for a user
@@ -24,6 +25,9 @@ class Transaction {
        VALUES (?, ?, ?, ?, ?, ?)`,
       [userId, name, category, type, amount, date]
     );
+
+    // Update balance after creating transaction
+    await Balance.updateBalance(userId, amount, type);
 
     // Return the created transaction
     const [newTransaction] = await db.query(

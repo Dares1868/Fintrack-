@@ -7,6 +7,7 @@ import {
   getUserBalance,
   saveUserBalance,
 } from "../utils/storage/userStorage";
+import { getBalance } from "../services/balanceService";
 
 const Dashboard = () => {
   const [userName, setUserName] = useState("");
@@ -14,20 +15,37 @@ const Dashboard = () => {
   const [showMenu, setShowMenu] = useState(false);
   const [user, setUser] = useState({ name: "User", balance: 0 });
   const [goals, setGoals] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const storedName = getUserFullName();
-    const storedBalance = getUserBalance();
-    const goalsFromStorage = JSON.parse(
-      localStorage.getItem("goalsData") || "[]"
-    );
-    if (storedName) {
-      setUserName(storedName);
-      setUser({ name: storedName, balance: storedBalance });
-      setGoals(goalsFromStorage);
-    } else {
-      navigate("/login");
-    }
+    const fetchDashboardData = async () => {
+      const storedName = getUserFullName();
+      const goalsFromStorage = JSON.parse(
+        localStorage.getItem("goalsData") || "[]"
+      );
+      
+      if (storedName) {
+        setUserName(storedName);
+        setGoals(goalsFromStorage);
+        
+        try {
+          // Fetch balance from API
+          const balanceData = await getBalance();
+          setUser({ name: storedName, balance: balanceData.currentAmount });
+        } catch (error) {
+          console.error("Error fetching balance:", error);
+          // Fallback to localStorage if API fails
+          const storedBalance = getUserBalance();
+          setUser({ name: storedName, balance: storedBalance });
+        } finally {
+          setLoading(false);
+        }
+      } else {
+        navigate("/login");
+      }
+    };
+
+    fetchDashboardData();
   }, [navigate]);
 
   return (
