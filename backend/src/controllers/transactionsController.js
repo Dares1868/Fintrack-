@@ -151,3 +151,30 @@ exports.getTransactionSummary = async (req, res) => {
     res.status(500).json({ error: "Failed to fetch transaction summary" });
   }
 };
+
+// Delete a transaction
+exports.deleteTransaction = async (req, res) => {
+  try {
+    const userId = req.session.userId;
+    const transactionId = req.params.id;
+
+    if (!userId) {
+      return res.status(401).json({ error: "Not authenticated" });
+    }
+
+    if (!transactionId || isNaN(transactionId)) {
+      return res.status(400).json({ error: "Invalid transaction ID" });
+    }
+
+    const deleted = await Transaction.delete(transactionId, userId);
+
+    if (!deleted) {
+      return res.status(404).json({ error: "Transaction not found or unauthorized" });
+    }
+
+    res.json({ message: "Transaction deleted successfully" });
+  } catch (error) {
+    console.error("Error deleting transaction:", error);
+    res.status(500).json({ error: "Failed to delete transaction" });
+  }
+};

@@ -107,3 +107,29 @@ export const getTransactionSummary = async () => {
     throw error;
   }
 };
+
+// Delete a transaction
+export const deleteTransaction = async (transactionId) => {
+  try {
+    const response = await fetch(`${API_URL}/api/transactions/${transactionId}`, {
+      method: "DELETE",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      const errorMessage = error.error || "Failed to delete transaction";
+      const errorObj = new Error(errorMessage);
+      errorObj.status = response.status;
+      throw errorObj;
+    }
+
+    return true;
+  } catch (error) {
+    console.error("Error deleting transaction:", error);
+    throw error;
+  }
+};

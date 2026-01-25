@@ -25,4 +25,7 @@ router.post("/migrate", transactionsController.migrateTransactions);
 // Get transaction summary by category
 router.get("/summary", transactionsController.getTransactionSummary);
 
+// Delete a transaction
+router.delete("/:id", transactionsController.deleteTransaction);
+
 module.exports = router;

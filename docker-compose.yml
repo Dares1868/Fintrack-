@@ -55,7 +55,6 @@ services:
       dockerfile: Dockerfile.frontend
     container_name: fintrack-frontend
     environment:
-      VITE_API_URL: http://localhost:3001
       VITE_NODE_ENV: development
     ports:
       - "3000:3000"

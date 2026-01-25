@@ -34,6 +34,7 @@
   padding: 10px 20px;
   border-radius: 16px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  position: relative;
 }
 .transaction-icon {
   font-size: 20px;
@@ -197,4 +198,67 @@
   align-items: center;
   justify-content: center;
   margin-right: 16px;
+}
+
+.transaction-delete-btn {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: none;
+  border: none;
+  color: #7f5af0;
+  font-size: 18px;
+  font-weight: 1000;
+  cursor: pointer;
+  padding: 2px 6px;
+  border-radius: 4px;
+  transition: color 0.2s;
+  line-height: 1;
+}
+
+.transaction-delete-btn:hover {
+  color: #5a3eb8;
+}
+
+.delete-modal-content {
+  background: #1e1e2f;
+  padding: 2rem;
+  border-radius: 16px;
+  width: 90%;
+  max-width: 350px;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  text-align: center;
+}
+
+.delete-modal-content h2 {
+  margin: 0;
+  font-size: 1.3rem;
+  color: #bcb6f6;
+}
+
+.delete-confirm-btn {
+  background: #ef4444;
+  color: white;
+  padding: 0.7rem 1.2rem;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  flex: 1;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.delete-cancel-btn {
+  background: #7f5af0;
+  color: white;
+  padding: 0.7rem 1.2rem;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  flex: 1;
+  font-size: 1rem;
+  font-weight: 600;
 }

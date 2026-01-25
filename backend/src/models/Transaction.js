@@ -97,6 +97,36 @@ class Transaction {
     );
     return rows;
   }
+
+  // Delete a transaction
+  static async delete(transactionId, userId) {
+    const db = getPool();
+    
+    // First, get the transaction to retrieve amount and type for balance update
+    const transaction = await this.findById(transactionId, userId);
+    
+    if (!transaction) {
+      return false;
+    }
+
+    // Delete the transaction
+    const [result] = await db.query(
+      `DELETE FROM transactions WHERE id = ? AND user_id = ?`,
+      [transactionId, userId]
+    );
+
+    if (result.affectedRows > 0) {
+      // Update balance by reversing the transaction
+      // If it was an expense (negative), add it back (subtract negative = add positive)
+      // If it was income (positive), subtract it
+      const reverseAmount = -transaction.amount;
+      await Balance.updateBalance(userId, reverseAmount, transaction.type === 'income' ? 'expense' : 'income');
+      
+      return true;
+    }
+
+    return false;
+  }
 }
 
 module.exports = Transaction;

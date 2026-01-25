@@ -7,6 +7,7 @@ import "../styles/transactions.css";
 import {
   getTransactions,
   createTransaction,
+  deleteTransaction,
 } from "../services/transactionService";
 
 const categoryNames = {
@@ -39,6 +40,8 @@ const TransactionsPage = () => {
   const [transactions, setTransactions] = useState([]);
   const [filter, setFilter] = useState("all");
   const [showModal, setShowModal] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [transactionToDelete, setTransactionToDelete] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -107,6 +110,41 @@ const TransactionsPage = () => {
       type: "expense",
     });
     setShowModal(true);
+  };
+
+  const handleDeleteTransaction = async (transactionId) => {
+    setTransactionToDelete(transactionId);
+    setShowDeleteModal(true);
+  };
+
+  const confirmDelete = async () => {
+    if (!transactionToDelete) return;
+
+    try {
+      await deleteTransaction(transactionToDelete);
+
+      // Remove from local state
+      setTransactions(transactions.filter(t => t.id !== transactionToDelete));
+      setShowDeleteModal(false);
+      setTransactionToDelete(null);
+    } catch (err) {
+      console.error("Error deleting transaction:", err);
+
+      // Redirect to login if not authenticated
+      if (err.status === 401) {
+        navigate("/");
+        return;
+      }
+
+      alert("Failed to delete transaction. Please try again.");
+      setShowDeleteModal(false);
+      setTransactionToDelete(null);
+    }
+  };
+
+  const cancelDelete = () => {
+    setShowDeleteModal(false);
+    setTransactionToDelete(null);
   };
 
   const handleSaveTransaction = async (e) => {
@@ -249,6 +287,13 @@ const TransactionsPage = () => {
                   {t.amount < 0 ? "-" : ""}
                   {Math.abs(t.amount).toFixed(2)}$
                 </span>
+                <button
+                  className="transaction-delete-btn"
+                  onClick={() => handleDeleteTransaction(t.id)}
+                  title="Delete transaction"
+                >
+                  ✕
+                </button>
               </div>
             ))
           )}
@@ -333,6 +378,30 @@ const TransactionsPage = () => {
               </button>
             </div>
           </form>
+        </div>
+      )}
+
+      {showDeleteModal && (
+        <div className="transaction-modal">
+          <div className="delete-modal-content">
+            <h2>Do you wanna delete it?</h2>
+            <div className="transaction-modal-buttons">
+              <button
+                type="button"
+                className="delete-confirm-btn"
+                onClick={confirmDelete}
+              >
+                Yes
+              </button>
+              <button
+                type="button"
+                className="delete-cancel-btn"
+                onClick={cancelDelete}
+              >
+                No
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </div>
