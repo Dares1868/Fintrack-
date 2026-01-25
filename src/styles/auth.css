@@ -66,11 +66,10 @@
   font-weight: 600;
   cursor: pointer;
   margin-top: 8px;
-  transition: background 0.2s;
 }
 
 .login-btn:hover {
-  background: #5f2eea;
+  background: #7c6ee6;
 }
 
 .login-bottom-link {
@@ -93,11 +92,16 @@
 .link-btn {
   background: none;
   border: none;
-  color: #7c6ee6;
-  font-size: 16px;
+  color: #d4ccff;
+  font-size: 17px;
+  font-weight: bold;
   cursor: pointer;
   text-decoration: underline;
   padding: 0;
+}
+.link-btn:hover, .link-btn:focus {
+  color: #d4ccff;
+  outline: none;
 }
 
 @media (min-width: 900px) {

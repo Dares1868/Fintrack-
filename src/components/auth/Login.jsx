@@ -61,15 +61,6 @@ const Login = () => {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
-          <div className="forgotPassword-bottom-link">
-            <button
-              type="button"
-              className="link-btn"
-              onClick={() => navigate("/ForgotPassword")}
-            >
-              Forgot password?
-            </button>
-          </div>
           <button type="submit" className="login-btn" disabled={isLoading}>
             {isLoading ? "Signing in..." : "Sign in"}
           </button>
