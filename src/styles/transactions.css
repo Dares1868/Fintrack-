@@ -26,6 +26,7 @@
   display: flex;
   flex-direction: column;
   gap: 12px;
+  padding-bottom: 40px;
 }
 .transaction-card {
   display: flex;

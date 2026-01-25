@@ -8,6 +8,7 @@
   inset: unset;
   z-index: 1;
   overflow-y: auto;
+  padding-bottom: 40px;
 }
 
 .logo-top {

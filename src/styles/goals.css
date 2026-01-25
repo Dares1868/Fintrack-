@@ -3,6 +3,7 @@
   flex-direction: column;
   gap: 20px;
   margin-top: 32px;
+  padding-bottom: 40px;
 }
 
 .goal-card {
