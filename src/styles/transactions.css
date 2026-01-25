@@ -114,10 +114,12 @@
   border-radius: 16px;
   width: 90%;
   max-width: 400px;
+  max-height: 90vh;
   color: white;
   display: flex;
   flex-direction: column;
   gap: 1rem;
+  overflow-y: auto;
 }
 
 .transaction-modal-content h2 {
