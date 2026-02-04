@@ -8,10 +8,13 @@ import {
   saveUserBalance,
 } from "../utils/storage/userStorage";
 import { getBalance } from "../services/balanceService";
+import { translate } from "../utils/dictionary";
+import { useLanguage } from "../context/LanguageContext";
 
 const Dashboard = () => {
   const [userName, setUserName] = useState("");
   const navigate = useNavigate();
+  const { language } = useLanguage();
   const [showMenu, setShowMenu] = useState(false);
   const [user, setUser] = useState({ name: "User", balance: 0 });
   const [goals, setGoals] = useState([]);
@@ -21,13 +24,13 @@ const Dashboard = () => {
     const fetchDashboardData = async () => {
       const storedName = getUserFullName();
       const goalsFromStorage = JSON.parse(
-        localStorage.getItem("goalsData") || "[]"
+        localStorage.getItem("goalsData") || "[]",
       );
-      
+
       if (storedName) {
         setUserName(storedName);
         setGoals(goalsFromStorage);
-        
+
         try {
           // Fetch balance from API
           const balanceData = await getBalance();
@@ -54,21 +57,19 @@ const Dashboard = () => {
         ☰
       </button>
       <SidebarMenu open={showMenu} onClose={() => setShowMenu(false)} />
-      <h1>Hello, {user.name}!</h1>
+      <h1>
+        {translate("hello")}, {user.name}!
+      </h1>
       <div className="balance-card">
         <div>
-          <span>My balance</span>
+          <span>{translate("myBalance")}</span>
         </div>
         <div className="balance-amount">${user.balance.toFixed(2)}</div>
-        <div className="card-details">
-          <span>**** 0886</span>
-          <span>VISA</span>
-        </div>
       </div>
       <div className="goals-header">
-        <span>Goal</span>
+        <span>{translate("goal")}</span>
         <button className="seeall-btn" onClick={() => navigate("/app/goals")}>
-          See all
+          {translate("seeAll")}
         </button>
       </div>
       <div className="goals-list">

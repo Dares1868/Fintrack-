@@ -11,6 +11,12 @@
   padding-bottom: 40px;
 }
 
+@media (max-width: 768px) {
+  .intro-gradient-bg {
+    padding-bottom: 60px;
+  }
+}
+
 .logo-top {
   position: absolute;
   top: 40px;
@@ -23,6 +29,40 @@
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
+}
+
+.logo-lang-header {
+  position: absolute;
+  top: 40px;
+  left: 32px;
+  right: 32px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  z-index: 2;
+}
+
+.logo-lang-header .logo-top {
+  position: relative;
+  top: 0;
+  left: 0;
+}
+
+.logo-lang-header .language-switcher-btn {
+  background: rgba(124, 110, 230, 0.2);
+  border: 1px solid rgba(124, 110, 230, 0.4);
+  color: #fff;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-weight: 600;
+}
+
+.logo-lang-header .language-switcher-btn:hover {
+  background: rgba(124, 110, 230, 0.3);
+  border-color: rgba(124, 110, 230, 0.6);
 }
 
 .intro-center {
@@ -55,7 +95,9 @@
   font-weight: 600;
   cursor: pointer;
   box-shadow: 0 2px 16px rgba(0, 0, 0, 0.1);
-  transition: background 0.2s, color 0.2s;
+  transition:
+    background 0.2s,
+    color 0.2s;
   z-index: 2;
 }
 

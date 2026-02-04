@@ -28,6 +28,12 @@
   gap: 12px;
   padding-bottom: 40px;
 }
+
+@media (max-width: 768px) {
+  .transactions-list {
+    padding-bottom: 60px;
+  }
+}
 .transaction-card {
   display: flex;
   align-items: center;

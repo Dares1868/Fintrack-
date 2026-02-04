@@ -2,10 +2,14 @@ import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import "../../styles/introStart.css";
 import authService from "../../services/authService";
+import { translate } from "../../utils/dictionary";
+import { useLanguage } from "../../context/LanguageContext";
+import LanguageSwitcher from "../ui/LanguageSwitcher";
 
 const Login = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { language } = useLanguage();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -31,7 +35,7 @@ const Login = () => {
       localStorage.setItem("userFullName", response.user.name);
       navigate("/app/dashboard");
     } catch (error) {
-      setError(error.message || "Login failed. Please try again.");
+      setError(error.message || translate("loginFailed"));
     } finally {
       setIsLoading(false);
     }
@@ -39,36 +43,39 @@ const Login = () => {
 
   return (
     <div className="intro-gradient-bg">
-      <span className="logo-top">FinTrack</span>
+      <div className="logo-lang-header">
+        <span className="logo-top">FinTrack</span>
+        <LanguageSwitcher />
+      </div>
       <div className="login-center">
-        <h1 className="login-title">Welcome back</h1>
+        <h1 className="login-title">{translate("welcomeBack")}</h1>
         {successMessage && <p className="success-message">{successMessage}</p>}
         {error && <p className="error">{error}</p>}
         <form className="login-form" onSubmit={handleSubmit}>
-          <label>Email</label>
+          <label>{translate("email")}</label>
           <input
             type="email"
-            placeholder="Email"
+            placeholder={translate("email")}
             required
             value={email}
             onChange={(e) => setEmail(e.target.value)}
           />
-          <label>Password</label>
+          <label>{translate("password")}</label>
           <input
             type="password"
-            placeholder="Password"
+            placeholder={translate("password")}
             required
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
           <button type="submit" className="login-btn" disabled={isLoading}>
-            {isLoading ? "Signing in..." : "Sign in"}
+            {isLoading ? translate("signingIn") : translate("signIn")}
           </button>
         </form>
         <div className="login-bottom-link">
-          <span>Don't have an account?</span>
+          <span>{translate("dontHaveAccount")}</span>
           <button className="link-btn" onClick={() => navigate("/register")}>
-            Sign up
+            {translate("signUp")}
           </button>
         </div>
       </div>

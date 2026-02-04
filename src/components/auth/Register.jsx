@@ -2,9 +2,13 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "../../styles/auth.css";
 import authService from "../../services/authService";
+import { translate } from "../../utils/dictionary";
+import { useLanguage } from "../../context/LanguageContext";
+import LanguageSwitcher from "../ui/LanguageSwitcher";
 
 const Register = () => {
   const navigate = useNavigate();
+  const { language } = useLanguage();
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -30,7 +34,7 @@ const Register = () => {
       const hasLowerCase = /[a-z]/.test(password);
       const hasNumber = /\d/.test(password);
       const hasSpecialChar = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(
-        password
+        password,
       );
 
       if (!hasUpperCase || !hasLowerCase || !hasNumber || !hasSpecialChar) {
@@ -79,34 +83,37 @@ const Register = () => {
       <button className="back-btn" onClick={() => navigate("/login")}>
         &#8592;
       </button>
-      <span className="logo-top">FinTrack</span>
+      <div className="logo-lang-header">
+        <span className="logo-top">FinTrack</span>
+        <LanguageSwitcher />
+      </div>
       <div className="login-center">
-        <h1 className="login-title">Create account</h1>
+        <h1 className="login-title">{translate("signUp")}</h1>
         <p className="register-subtitle">
           Join FinTrack to manage your finances
         </p>
         <form className="login-form" onSubmit={handleRegister}>
-          <label>Full name</label>
+          <label>{translate("name")}</label>
           <input
             type="text"
-            placeholder="Full name"
+            placeholder={translate("name")}
             required
             value={fullName}
             onChange={(e) => setFullName(e.target.value)}
           />
-          <label>Email</label>
+          <label>{translate("email")}</label>
           <input
             type="email"
-            placeholder="Email"
+            placeholder={translate("email")}
             required
             value={email}
             onChange={(e) => setEmail(e.target.value)}
           />
           {errors.email && <p className="error">{errors.email}</p>}
-          <label>Password</label>
+          <label>{translate("password")}</label>
           <input
             type="password"
-            placeholder="Password"
+            placeholder={translate("password")}
             required
             value={password}
             onChange={(e) => setPassword(e.target.value)}
@@ -129,13 +136,13 @@ const Register = () => {
           )}
           {errors.submit && <p className="error">{errors.submit}</p>}
           <button type="submit" className="login-btn" disabled={isLoading}>
-            {isLoading ? "Creating account..." : "Create account"}
+            {isLoading ? translate("signingUp") : translate("signUp")}
           </button>
         </form>
         <div className="login-bottom-link">
-          <span>Already have an account?</span>
+          <span>{translate("alreadyHaveAccount")}</span>
           <button className="link-btn" onClick={() => navigate("/login")}>
-            Sign in
+            {translate("signIn")}
           </button>
         </div>
       </div>

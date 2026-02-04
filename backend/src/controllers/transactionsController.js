@@ -104,7 +104,7 @@ exports.migrateTransactions = async (req, res) => {
           tx.category &&
           tx.type &&
           tx.amount !== undefined &&
-          tx.date
+          tx.date,
       )
       .map((tx) => ({
         name: tx.name.trim(),
@@ -122,7 +122,7 @@ exports.migrateTransactions = async (req, res) => {
 
     const migratedTransactions = await Transaction.createMany(
       userId,
-      validTransactions
+      validTransactions,
     );
 
     res.status(201).json({
@@ -169,7 +169,9 @@ exports.deleteTransaction = async (req, res) => {
     const deleted = await Transaction.delete(transactionId, userId);
 
     if (!deleted) {
-      return res.status(404).json({ error: "Transaction not found or unauthorized" });
+      return res
+        .status(404)
+        .json({ error: "Transaction not found or unauthorized" });
     }
 
     res.json({ message: "Transaction deleted successfully" });

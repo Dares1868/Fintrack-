@@ -1,4 +1,8 @@
+import { translate } from "../../utils/dictionary";
+import { useLanguage } from "../../context/LanguageContext";
+
 const DonutChart = ({ data, total, mode = "month" }) => {
+  const { language } = useLanguage();
   const size = 180;
   const stroke = 28;
   const radius = (size - stroke) / 2;
@@ -40,23 +44,12 @@ const DonutChart = ({ data, total, mode = "month" }) => {
         x="50%"
         y="50%"
         textAnchor="middle"
-        dy="-0.2em"
-        fontSize="18"
+        dy="0.4em"
+        fontSize="14"
         fill="#fff"
         fontWeight="bold"
       >
-        Spend this
-      </text>
-      <text
-        x="50%"
-        y="50%"
-        textAnchor="middle"
-        dy="1.2em"
-        fontSize="18"
-        fill="#fff"
-        fontWeight="bold"
-      >
-        {mode}
+        {translate(language, mode === "month" ? "spendInMonth" : "spendInYear")}
       </text>
     </svg>
   );

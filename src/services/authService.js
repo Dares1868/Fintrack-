@@ -12,10 +12,19 @@ class AuthService {
         body: JSON.stringify(userData),
       });
 
-      const data = await response.json();
+      // Check if response has content
+      const contentType = response.headers.get("content-type");
+      let data;
+
+      if (contentType && contentType.includes("application/json")) {
+        const text = await response.text();
+        data = text ? JSON.parse(text) : {};
+      } else {
+        data = {};
+      }
 
       if (!response.ok) {
-        throw new Error(data.error || "Registration failed");
+        throw new Error(data.error || data.details || "Registration failed");
       }
 
       return data;
@@ -36,10 +45,19 @@ class AuthService {
         body: JSON.stringify(credentials),
       });
 
-      const data = await response.json();
+      // Check if response has content
+      const contentType = response.headers.get("content-type");
+      let data;
+
+      if (contentType && contentType.includes("application/json")) {
+        const text = await response.text();
+        data = text ? JSON.parse(text) : {};
+      } else {
+        data = {};
+      }
 
       if (!response.ok) {
-        throw new Error(data.error || "Login failed");
+        throw new Error(data.error || data.details || "Login failed");
       }
 
       return data;
@@ -56,12 +74,22 @@ class AuthService {
         credentials: "include",
       });
 
-      if (!response.ok) {
-        const data = await response.json();
-        throw new Error(data.error || "Logout failed");
+      // Check if response has content
+      const contentType = response.headers.get("content-type");
+      let data;
+
+      if (contentType && contentType.includes("application/json")) {
+        const text = await response.text();
+        data = text ? JSON.parse(text) : {};
+      } else {
+        data = {};
       }
 
-      return await response.json();
+      if (!response.ok) {
+        throw new Error(data.error || data.details || "Logout failed");
+      }
+
+      return data;
     } catch (error) {
       console.error("Logout error:", error);
       throw error;
@@ -79,7 +107,17 @@ class AuthService {
         return null; // User not authenticated
       }
 
-      const data = await response.json();
+      // Check if response has content
+      const contentType = response.headers.get("content-type");
+      let data;
+
+      if (contentType && contentType.includes("application/json")) {
+        const text = await response.text();
+        data = text ? JSON.parse(text) : {};
+      } else {
+        return null;
+      }
+
       return data.user;
     } catch (error) {
       console.error("Get current user error:", error);

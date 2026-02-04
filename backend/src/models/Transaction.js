@@ -10,7 +10,7 @@ class Transaction {
        FROM transactions 
        WHERE user_id = ? 
        ORDER BY date DESC, created_at DESC`,
-      [userId]
+      [userId],
     );
     return rows;
   }
@@ -23,7 +23,7 @@ class Transaction {
     const [result] = await db.query(
       `INSERT INTO transactions (user_id, name, category, type, amount, date) 
        VALUES (?, ?, ?, ?, ?, ?)`,
-      [userId, name, category, type, amount, date]
+      [userId, name, category, type, amount, date],
     );
 
     // Update balance after creating transaction
@@ -34,7 +34,7 @@ class Transaction {
       `SELECT id, user_id, name, category, type, amount, date, created_at, updated_at 
        FROM transactions 
        WHERE id = ?`,
-      [result.insertId]
+      [result.insertId],
     );
 
     return newTransaction[0];
@@ -63,7 +63,7 @@ class Transaction {
     await db.query(
       `INSERT INTO transactions (user_id, name, category, type, amount, date) 
        VALUES ${placeholders}`,
-      values.flat()
+      values.flat(),
     );
 
     // Return all user transactions
@@ -77,7 +77,7 @@ class Transaction {
       `SELECT id, user_id, name, category, type, amount, date, created_at, updated_at 
        FROM transactions 
        WHERE id = ? AND user_id = ?`,
-      [transactionId, userId]
+      [transactionId, userId],
     );
     return rows[0];
   }
@@ -93,7 +93,7 @@ class Transaction {
        FROM transactions 
        WHERE user_id = ? 
        GROUP BY category`,
-      [userId]
+      [userId],
     );
     return rows;
   }
@@ -101,10 +101,10 @@ class Transaction {
   // Delete a transaction
   static async delete(transactionId, userId) {
     const db = getPool();
-    
+
     // First, get the transaction to retrieve amount and type for balance update
     const transaction = await this.findById(transactionId, userId);
-    
+
     if (!transaction) {
       return false;
     }
@@ -112,7 +112,7 @@ class Transaction {
     // Delete the transaction
     const [result] = await db.query(
       `DELETE FROM transactions WHERE id = ? AND user_id = ?`,
-      [transactionId, userId]
+      [transactionId, userId],
     );
 
     if (result.affectedRows > 0) {
@@ -120,8 +120,12 @@ class Transaction {
       // If it was an expense (negative), add it back (subtract negative = add positive)
       // If it was income (positive), subtract it
       const reverseAmount = -transaction.amount;
-      await Balance.updateBalance(userId, reverseAmount, transaction.type === 'income' ? 'expense' : 'income');
-      
+      await Balance.updateBalance(
+        userId,
+        reverseAmount,
+        transaction.type === "income" ? "expense" : "income",
+      );
+
       return true;
     }
 

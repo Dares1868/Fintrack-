@@ -4,6 +4,8 @@ import SidebarMenu from "../components/ui/SidebarMenu";
 import DonutChart from "../components/ui/DonutChart1";
 import { getExpenses } from "../services/expenseService";
 import "../styles/expenses.css";
+import { translate } from "../utils/dictionary";
+import { useLanguage } from "../context/LanguageContext";
 
 const CATEGORY_COLORS = {
   "📄": "#4B7BE3",
@@ -16,16 +18,16 @@ const CATEGORY_COLORS = {
   "🚗": "#00CFFF",
   "✈️": "#A682FF",
 };
-const CATEGORY_LABELS = {
-  "📄": "Bills & Utilities",
-  "🎓": "Education",
-  "🎬": "Entertainment",
-  "🍴": "Food & Dining",
-  "❤️": "Healthcare",
-  "💡": "Other",
-  "🛒": "Shopping",
-  "🚗": "Transportation",
-  "✈️": "Travel",
+const CATEGORY_LABEL_KEYS = {
+  "📄": "billsAndUtilities",
+  "🎓": "education",
+  "🎬": "entertainment",
+  "🍴": "foodAndDining",
+  "❤️": "healthcare",
+  "💡": "other",
+  "🛒": "shopping",
+  "🚗": "transportation",
+  "✈️": "travel",
 };
 const CATEGORY_ICONS = {
   utilities: "📄",
@@ -39,31 +41,9 @@ const CATEGORY_ICONS = {
   travel: "✈️",
 };
 
-const monthNames = [
-  "January",
-  "February",
-  "March",
-  "April",
-  "May",
-  "June",
-  "July",
-  "August",
-  "September",
-  "October",
-  "November",
-  "December",
-];
-
-const formatMonthYear = (year, monthIndex) =>
-  `${monthNames[monthIndex]} ${year}`;
-
-const sameMonth = (d, year, monthIndex) =>
-  d.getFullYear() === year && d.getMonth() === monthIndex;
-
-const sameYear = (d, year) => d.getFullYear() === year;
-
 const ExpensesPage = () => {
   const navigate = useNavigate();
+  const { language } = useLanguage();
   const [showMenu, setShowMenu] = useState(false);
   const [transactions, setTransactions] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -74,7 +54,31 @@ const ExpensesPage = () => {
   const [viewMode, setViewMode] = useState("month");
 
   const [isMonthMenuOpen, setIsMonthMenuOpen] = useState(false);
+  const [isYearMenuOpen, setIsYearMenuOpen] = useState(false);
   const menuRef = useRef(null);
+
+  const monthNames = [
+    translate(language, "january"),
+    translate(language, "february"),
+    translate(language, "march"),
+    translate(language, "april"),
+    translate(language, "may"),
+    translate(language, "june"),
+    translate(language, "july"),
+    translate(language, "august"),
+    translate(language, "september"),
+    translate(language, "october"),
+    translate(language, "november"),
+    translate(language, "december"),
+  ];
+
+  const formatMonthYear = (year, monthIndex) =>
+    `${monthNames[monthIndex]} ${year}`;
+
+  const sameMonth = (d, year, monthIndex) =>
+    d.getFullYear() === year && d.getMonth() === monthIndex;
+
+  const sameYear = (d, year) => d.getFullYear() === year;
 
   // Fetch all expenses on mount
   useEffect(() => {
@@ -94,7 +98,7 @@ const ExpensesPage = () => {
           return;
         }
 
-        setError("Failed to load expenses. Please try again.");
+        setError(translate(language, "failedToLoadExpenses"));
         setTransactions([]);
       } finally {
         setLoading(false);
@@ -104,16 +108,20 @@ const ExpensesPage = () => {
     fetchExpenses();
 
     // Refresh session periodically to prevent timeout
-    const sessionRefresh = setInterval(async () => {
-      try {
-        const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3001";
-        await fetch(`${API_URL}/health`, {
-          credentials: "include",
-        });
-      } catch (error) {
-        console.error("Session refresh failed:", error);
-      }
-    }, 10 * 60 * 1000); // Refresh every 10 minutes
+    const sessionRefresh = setInterval(
+      async () => {
+        try {
+          const API_URL =
+            import.meta.env.VITE_API_URL || "http://localhost:3001";
+          await fetch(`${API_URL}/health`, {
+            credentials: "include",
+          });
+        } catch (error) {
+          console.error("Session refresh failed:", error);
+        }
+      },
+      10 * 60 * 1000,
+    ); // Refresh every 10 minutes
 
     return () => clearInterval(sessionRefresh);
   }, [navigate]);
@@ -142,6 +150,15 @@ const ExpensesPage = () => {
     return list;
   }, [transactions]);
 
+  const availableYears = useMemo(() => {
+    const yearsSet = new Set();
+    transactions.forEach((t) => {
+      const d = new Date(t.date);
+      yearsSet.add(d.getFullYear());
+    });
+    return Array.from(yearsSet).sort((a, b) => b - a);
+  }, [transactions]);
+
   useEffect(() => {
     if (!selectedMonth || !selectedYear) {
       if (availableMonths.length > 0) {
@@ -159,13 +176,14 @@ const ExpensesPage = () => {
     const onDocClick = (e) => {
       if (menuRef.current && !menuRef.current.contains(e.target)) {
         setIsMonthMenuOpen(false);
+        setIsYearMenuOpen(false);
       }
     };
-    if (isMonthMenuOpen) {
+    if (isMonthMenuOpen || isYearMenuOpen) {
       document.addEventListener("mousedown", onDocClick);
     }
     return () => document.removeEventListener("mousedown", onDocClick);
-  }, [isMonthMenuOpen]);
+  }, [isMonthMenuOpen, isYearMenuOpen]);
 
   const filteredTransactions = useMemo(() => {
     if (!selectedYear || selectedMonth === null) return [];
@@ -187,10 +205,11 @@ const ExpensesPage = () => {
     filteredTransactions.forEach((tx) => {
       const icon = CATEGORY_ICONS[tx.category] || "⋯";
       if (!map[icon]) {
+        const labelKey = CATEGORY_LABEL_KEYS[icon] || "other";
         map[icon] = {
           sum: 0,
           count: 0,
-          label: CATEGORY_LABELS[icon] || "Other",
+          label: translate(language, labelKey),
           color: CATEGORY_COLORS[icon] || "#18181b",
         };
       }
@@ -198,19 +217,19 @@ const ExpensesPage = () => {
       map[icon].count += 1;
     });
     return map;
-  }, [filteredTransactions]);
+  }, [filteredTransactions, language]);
 
   const chartData = useMemo(
     () =>
       Object.entries(categoriesMap)
         .map(([icon, data]) => ({ icon, ...data }))
         .sort((a, b) => b.sum - a.sum),
-    [categoriesMap]
+    [categoriesMap],
   );
 
   const total = useMemo(
     () => chartData.reduce((a, c) => a + c.sum, 0),
-    [chartData]
+    [chartData],
   );
 
   const title = useMemo(() => {
@@ -231,6 +250,11 @@ const ExpensesPage = () => {
     setIsMonthMenuOpen(false);
   };
 
+  const handlePickYear = (year) => {
+    setSelectedYear(year);
+    setIsYearMenuOpen(false);
+  };
+
   const handleToggleView = (mode) => setViewMode(mode);
 
   if (loading) {
@@ -244,7 +268,9 @@ const ExpensesPage = () => {
         </button>
         <SidebarMenu open={showMenu} onClose={() => setShowMenu(false)} />
         <div className="dashboard-center-wrap">
-          <div className="expenses-no-data">Loading expenses...</div>
+          <div className="expenses-no-data">
+            {translate(language, "loadingExpenses")}
+          </div>
         </div>
       </div>
     );
@@ -284,19 +310,32 @@ const ExpensesPage = () => {
           <div className="month-menu-wrap" ref={menuRef}>
             <button
               className="expenses-title"
-              onClick={() => setIsMonthMenuOpen((v) => !v)}
+              onClick={() => {
+                if (viewMode === "month") {
+                  setIsMonthMenuOpen((v) => !v);
+                  setIsYearMenuOpen(false);
+                } else {
+                  setIsYearMenuOpen((v) => !v);
+                  setIsMonthMenuOpen(false);
+                }
+              }}
               aria-haspopup="listbox"
-              aria-expanded={isMonthMenuOpen}
-              title="Choose month"
+              aria-expanded={isMonthMenuOpen || isYearMenuOpen}
+              title={translate(
+                language,
+                viewMode === "month" ? "chooseMonth" : "chooseYear",
+              )}
             >
               {title}
               <span className="expenses-title-caret">▾</span>
             </button>
 
-            {isMonthMenuOpen && (
+            {isMonthMenuOpen && viewMode === "month" && (
               <div role="listbox" className="month-dropdown">
                 {availableMonths.length === 0 && (
-                  <div className="month-empty">No months</div>
+                  <div className="month-empty">
+                    {translate(language, "noMonths")}
+                  </div>
                 )}
                 {availableMonths.map((m) => {
                   const isActive =
@@ -315,6 +354,30 @@ const ExpensesPage = () => {
                 })}
               </div>
             )}
+
+            {isYearMenuOpen && viewMode === "year" && (
+              <div role="listbox" className="month-dropdown">
+                {availableYears.length === 0 && (
+                  <div className="month-empty">
+                    {translate(language, "noMonths")}
+                  </div>
+                )}
+                {availableYears.map((year) => {
+                  const isActive = year === selectedYear;
+                  return (
+                    <button
+                      key={year}
+                      onClick={() => handlePickYear(year)}
+                      className={`month-dropdown-item ${
+                        isActive ? "active" : ""
+                      }`}
+                    >
+                      {year}
+                    </button>
+                  );
+                })}
+              </div>
+            )}
           </div>
 
           <span className="expenses-total">
@@ -328,9 +391,9 @@ const ExpensesPage = () => {
               className={`view-toggle-btn ${
                 viewMode === "month" ? "active" : ""
               }`}
-              title="Show monthly chart"
+              title={translate(language, "showMonthlyChart")}
             >
-              Month
+              {translate(language, "month")}
             </button>
             <button
               onClick={() => handleToggleView("year")}
@@ -338,9 +401,9 @@ const ExpensesPage = () => {
               className={`view-toggle-btn ${
                 viewMode === "year" ? "active" : ""
               }`}
-              title="Show yearly chart"
+              title={translate(language, "showYearlyChart")}
             >
-              Year
+              {translate(language, "year")}
             </button>
           </div>
         </div>
@@ -351,13 +414,15 @@ const ExpensesPage = () => {
           </div>
         ) : (
           <div className="expenses-no-data">
-            No data for the selected period.
+            {translate(language, "noDataForPeriod")}
           </div>
         )}
 
         {chartData.length > 0 && (
           <>
-            <div className="expenses-transactions-title">Transactions</div>
+            <div className="expenses-transactions-title">
+              {translate(language, "transactions")}
+            </div>
             <div className="expenses-transactions-list">
               {chartData.map((cat) => (
                 <div className="expenses-transaction-row" key={cat.icon}>
@@ -372,7 +437,10 @@ const ExpensesPage = () => {
                       {cat.label}
                     </div>
                     <div className="expenses-transaction-count">
-                      {cat.count} transaction{cat.count > 1 ? "s" : ""}
+                      {cat.count}{" "}
+                      {cat.count === 1
+                        ? translate(language, "transaction")
+                        : translate(language, "transactions").toLowerCase()}
                     </div>
                   </div>
                   <div className="expenses-transaction-amount">

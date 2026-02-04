@@ -4,6 +4,8 @@ import SidebarMenu from "../components/ui/SidebarMenu";
 import "../styles/dashboard.css";
 import "../styles/goals.css";
 import * as goalService from "../services/goalService";
+import { translate } from "../utils/dictionary";
+import { useLanguage } from "../context/LanguageContext";
 
 const categoryGroups = {
   "Short-Term Goals (0-12 months)": [
@@ -30,6 +32,7 @@ const statusOptions = ["active", "achieved", "cancelled"];
 
 const GoalsPage = () => {
   const navigate = useNavigate();
+  const { language } = useLanguage();
   const [showMenu, setShowMenu] = useState(false);
   const [goals, setGoals] = useState([]);
   const [showModal, setShowModal] = useState(false);
@@ -64,16 +67,20 @@ const GoalsPage = () => {
     fetchGoals();
 
     // Refresh session periodically to prevent timeout
-    const sessionRefresh = setInterval(async () => {
-      try {
-        const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3001";
-        await fetch(`${API_URL}/health`, {
-          credentials: "include",
-        });
-      } catch (error) {
-        console.error("Session refresh failed:", error);
-      }
-    }, 10 * 60 * 1000); // Refresh every 10 minutes
+    const sessionRefresh = setInterval(
+      async () => {
+        try {
+          const API_URL =
+            import.meta.env.VITE_API_URL || "http://localhost:3001";
+          await fetch(`${API_URL}/health`, {
+            credentials: "include",
+          });
+        } catch (error) {
+          console.error("Session refresh failed:", error);
+        }
+      },
+      10 * 60 * 1000,
+    ); // Refresh every 10 minutes
 
     return () => clearInterval(sessionRefresh);
   }, [navigate]);
@@ -182,7 +189,9 @@ const GoalsPage = () => {
       <SidebarMenu open={showMenu} onClose={() => setShowMenu(false)} />
 
       <div className="dashboard-center-wrap">
-        <h1 className="dashboard-title">Saving goals</h1>
+        <h1 className="dashboard-title">
+          {translate(language, "savingGoals")}
+        </h1>
 
         <div className="goals-list">
           {goals.map((goal, idx) => {
@@ -194,8 +203,8 @@ const GoalsPage = () => {
               goal.status === "achieved"
                 ? "status-achieved"
                 : goal.status === "cancelled"
-                ? "status-cancelled"
-                : "status-active";
+                  ? "status-cancelled"
+                  : "status-active";
 
             return (
               <div
@@ -255,7 +264,7 @@ const GoalsPage = () => {
         </div>
 
         <button className="add-goal-btn" onClick={handleAddGoal}>
-          + Add New Goal
+          {translate(language, "addNewGoal")}
         </button>
 
         {showModal && (
@@ -264,10 +273,10 @@ const GoalsPage = () => {
               className="transaction-modal-content"
               onSubmit={handleFormSubmit}
             >
-              <h2>Add Goal</h2>
+              <h2>{translate(language, "addGoal")}</h2>
 
               <label>
-                Name
+                {translate(language, "name")}
                 <input
                   type="text"
                   value={form.name}
@@ -277,19 +286,22 @@ const GoalsPage = () => {
               </label>
 
               <label>
-                Description
+                {translate(language, "description")}
                 <textarea
                   value={form.description}
                   onChange={(e) =>
                     setForm({ ...form, description: e.target.value })
                   }
                   rows="3"
-                  placeholder="What is this goal for?"
+                  placeholder={translate(
+                    language,
+                    "goalDescriptionPlaceholder",
+                  )}
                 />
               </label>
 
               <label>
-                Target Amount
+                {translate(language, "targetAmount")}
                 <input
                   type="number"
                   value={form.target}
@@ -299,7 +311,7 @@ const GoalsPage = () => {
               </label>
 
               <label>
-                Target Date
+                {translate(language, "targetDate")}
                 <input
                   type="date"
                   value={form.targetDate}
@@ -310,7 +322,7 @@ const GoalsPage = () => {
               </label>
 
               <label>
-                Category
+                {translate(language, "category")}
                 <select
                   value={form.isCustomCategory ? "custom" : form.category.name}
                   onChange={(e) => {
@@ -324,7 +336,7 @@ const GoalsPage = () => {
                         ...form,
                         isCustomCategory: false,
                         category: allCategories.find(
-                          (opt) => opt.name === e.target.value
+                          (opt) => opt.name === e.target.value,
                         ),
                       });
                     }
@@ -339,43 +351,45 @@ const GoalsPage = () => {
                           </option>
                         ))}
                       </optgroup>
-                    )
+                    ),
                   )}
-                  <option value="custom">✨ Custom Category</option>
+                  <option value="custom">
+                    {translate(language, "customCategory")}
+                  </option>
                 </select>
               </label>
 
               {form.isCustomCategory && (
                 <>
                   <label>
-                    Custom Category Name
+                    {translate(language, "customCategoryName")}
                     <input
                       type="text"
                       value={form.customCategoryName}
                       onChange={(e) =>
                         setForm({ ...form, customCategoryName: e.target.value })
                       }
-                      placeholder="e.g., Business Trip"
+                      placeholder={translate(language, "categoryPlaceholder")}
                       required
                     />
                   </label>
 
                   <label>
-                    Custom Icon (Emoji)
+                    {translate(language, "customIcon")}
                     <input
                       type="text"
                       value={form.customIcon}
                       onChange={(e) =>
                         setForm({ ...form, customIcon: e.target.value })
                       }
-                      placeholder="e.g., 💼"
+                      placeholder={translate(language, "iconPlaceholder")}
                       maxLength="2"
                       required
                     />
                   </label>
 
                   <label>
-                    Custom Color
+                    {translate(language, "customColor")}
                     <input
                       type="color"
                       value={form.customColor}
@@ -420,23 +434,29 @@ const GoalsPage = () => {
         {showDeleteModal && goalToDelete && (
           <div className="transaction-modal">
             <div className="delete-modal-content">
-              <h2>Delete Goal</h2>
-              <p>Are you sure you want to delete "{goalToDelete.goal.name}"?</p>
-              <p className="delete-warning">This action cannot be undone.</p>
+              <h2>{translate(language, "deleteGoal")}</h2>
+              <p>
+                {translate(language, "confirmDeleteGoal", {
+                  name: goalToDelete.goal.name,
+                })}
+              </p>
+              <p className="delete-warning">
+                {translate(language, "actionCannotBeUndone")}
+              </p>
               <div className="transaction-modal-buttons">
                 <button
                   type="button"
                   className="delete-confirm-btn"
                   onClick={confirmDeleteGoal}
                 >
-                  Delete
+                  {translate(language, "delete")}
                 </button>
                 <button
                   type="button"
                   className="secondary-btn"
                   onClick={cancelDeleteGoal}
                 >
-                  Cancel
+                  {translate(language, "cancel")}
                 </button>
               </div>
             </div>

@@ -1,21 +1,29 @@
 import { useNavigate } from "react-router-dom";
 import "../../styles/sidebarMenu.css";
 import { logoutAction } from "../../actions/logout";
+import { translate } from "../../utils/dictionary";
+import { useLanguage } from "../../context/LanguageContext";
+import LanguageSwitcher from "./LanguageSwitcher";
 
 const SidebarMenu = ({ open, onClose }) => {
   const navigate = useNavigate();
+  const { language } = useLanguage();
+
   return (
     <div className={`sidebar-menu${open ? " open" : ""}`}>
       <button className="sidebar-close" onClick={onClose}>
         ×
       </button>
+      <div className="sidebar-lang-switcher">
+        <LanguageSwitcher />
+      </div>
       <button
         onClick={() => {
           navigate("/app/dashboard");
           onClose();
         }}
       >
-        Dashboard
+        {translate("dashboard")}
       </button>
       <button
         onClick={() => {
@@ -23,7 +31,7 @@ const SidebarMenu = ({ open, onClose }) => {
           onClose();
         }}
       >
-        Goals
+        {translate("goals")}
       </button>
       <button
         onClick={() => {
@@ -31,7 +39,7 @@ const SidebarMenu = ({ open, onClose }) => {
           onClose();
         }}
       >
-        Transactions
+        {translate("transactions")}
       </button>
       <button
         onClick={() => {
@@ -39,7 +47,7 @@ const SidebarMenu = ({ open, onClose }) => {
           onClose();
         }}
       >
-        Expenses
+        {translate("expenses")}
       </button>
       <button
         onClick={() => {
@@ -48,7 +56,7 @@ const SidebarMenu = ({ open, onClose }) => {
           onClose();
         }}
       >
-        Logout
+        {translate("logout")}
       </button>
     </div>
   );

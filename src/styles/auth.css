@@ -8,6 +8,12 @@
   padding-bottom: 40px;
 }
 
+@media (max-width: 768px) {
+  .login-center {
+    padding-bottom: 60px;
+  }
+}
+
 .login-title {
   color: #977dff;
   font-size: 28px;
@@ -100,7 +106,8 @@
   text-decoration: underline;
   padding: 0;
 }
-.link-btn:hover, .link-btn:focus {
+.link-btn:hover,
+.link-btn:focus {
   color: #d4ccff;
   outline: none;
 }

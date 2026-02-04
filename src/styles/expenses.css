@@ -212,3 +212,50 @@
   font-weight: 700;
   font-size: 18px;
 }
+
+/* Responsive styles for laptops (1024px) */
+@media (max-width: 1024px) {
+  .expenses-header {
+    padding-bottom: 24px;
+  }
+
+  .expenses-title {
+    font-size: 22px;
+  }
+
+  .expenses-total {
+    font-size: 16px;
+  }
+
+  .view-toggle-btn {
+    padding: 6px 10px;
+    font-size: 14px;
+  }
+
+  .expenses-transactions-title {
+    font-size: 16px;
+    margin-top: 16px;
+  }
+
+  .expenses-transaction-icon {
+    width: 36px;
+    height: 36px;
+    font-size: 16px;
+  }
+
+  .expenses-transaction-label {
+    font-size: 15px;
+  }
+
+  .expenses-transaction-count {
+    font-size: 12px;
+  }
+
+  .expenses-transaction-amount {
+    font-size: 16px;
+  }
+
+  .expenses-transaction-row {
+    gap: 10px;
+  }
+}

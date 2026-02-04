@@ -1,4 +1,6 @@
--- Create users table
+CREATE DATABASE IF NOT EXISTS fintrack_db;
+USE fintrack_db;
+
 CREATE TABLE IF NOT EXISTS users (
   id INT PRIMARY KEY AUTO_INCREMENT,
   name VARCHAR(100) NOT NULL,
@@ -16,7 +18,6 @@ CREATE TABLE IF NOT EXISTS users (
   INDEX idx_password_reset_token (password_reset_token)
 );
 
--- Create categories table for expenses
 CREATE TABLE IF NOT EXISTS categories (
   id INT PRIMARY KEY AUTO_INCREMENT,
   user_id INT NOT NULL,
@@ -29,7 +30,6 @@ CREATE TABLE IF NOT EXISTS categories (
   INDEX idx_user_id (user_id)
 );
 
--- Create transactions table
 CREATE TABLE IF NOT EXISTS transactions (
   id INT PRIMARY KEY AUTO_INCREMENT,
   user_id INT NOT NULL,
@@ -47,7 +47,6 @@ CREATE TABLE IF NOT EXISTS transactions (
   INDEX idx_type (type)
 );
 
--- Create goals table
 CREATE TABLE IF NOT EXISTS goals (
   id INT PRIMARY KEY AUTO_INCREMENT,
   user_id INT NOT NULL,
@@ -67,7 +66,6 @@ CREATE TABLE IF NOT EXISTS goals (
   INDEX idx_status (status)
 );
 
--- Create balance table
 CREATE TABLE IF NOT EXISTS balance (
   id INT PRIMARY KEY AUTO_INCREMENT,
   user_id INT NOT NULL UNIQUE,
@@ -78,7 +76,6 @@ CREATE TABLE IF NOT EXISTS balance (
   INDEX idx_user_id (user_id)
 );
 
--- Insert default categories
 INSERT IGNORE INTO categories (user_id, name, color, icon) VALUES
 (1, 'Food & Dining', '#e74c3c', 'utensils'),
 (1, 'Transportation', '#3498db', 'car'),

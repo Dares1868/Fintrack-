@@ -9,17 +9,19 @@ import {
   createTransaction,
   deleteTransaction,
 } from "../services/transactionService";
+import { translate } from "../utils/dictionary";
+import { useLanguage } from "../context/LanguageContext";
 
-const categoryNames = {
-  utilities: "Bills & Utilities",
-  education: "Education",
-  entertainment: "Entertainment",
-  food: "Food & Dining",
-  health: "Healthcare",
-  other: "Other",
-  shopping: "Shopping",
-  transport: "Transportation",
-  travel: "Travel",
+const categoryLabelKeys = {
+  utilities: "billsAndUtilities",
+  education: "education",
+  entertainment: "entertainment",
+  food: "foodAndDining",
+  health: "healthcare",
+  other: "other",
+  shopping: "shopping",
+  transport: "transportation",
+  travel: "travel",
 };
 
 const iconToCategoryMap = {
@@ -36,6 +38,7 @@ const iconToCategoryMap = {
 
 const TransactionsPage = () => {
   const navigate = useNavigate();
+  const { language } = useLanguage();
   const [showMenu, setShowMenu] = useState(false);
   const [transactions, setTransactions] = useState([]);
   const [filter, setFilter] = useState("all");
@@ -81,16 +84,20 @@ const TransactionsPage = () => {
     fetchTransactions();
 
     // Refresh session periodically to prevent timeout
-    const sessionRefresh = setInterval(async () => {
-      try {
-        const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3001";
-        await fetch(`${API_URL}/health`, {
-          credentials: "include",
-        });
-      } catch (error) {
-        console.error("Session refresh failed:", error);
-      }
-    }, 10 * 60 * 1000); // Refresh every 10 minutes
+    const sessionRefresh = setInterval(
+      async () => {
+        try {
+          const API_URL =
+            import.meta.env.VITE_API_URL || "http://localhost:3001";
+          await fetch(`${API_URL}/health`, {
+            credentials: "include",
+          });
+        } catch (error) {
+          console.error("Session refresh failed:", error);
+        }
+      },
+      10 * 60 * 1000,
+    ); // Refresh every 10 minutes
 
     return () => clearInterval(sessionRefresh);
   }, [navigate]);
@@ -124,7 +131,7 @@ const TransactionsPage = () => {
       await deleteTransaction(transactionToDelete);
 
       // Remove from local state
-      setTransactions(transactions.filter(t => t.id !== transactionToDelete));
+      setTransactions(transactions.filter((t) => t.id !== transactionToDelete));
       setShowDeleteModal(false);
       setTransactionToDelete(null);
     } catch (err) {
@@ -199,18 +206,18 @@ const TransactionsPage = () => {
 
   const date = new Date();
   const monthNames = [
-    "January",
-    "February",
-    "March",
-    "April",
-    "May",
-    "June",
-    "July",
-    "August",
-    "September",
-    "October",
-    "November",
-    "December",
+    translate(language, "january"),
+    translate(language, "february"),
+    translate(language, "march"),
+    translate(language, "april"),
+    translate(language, "may"),
+    translate(language, "june"),
+    translate(language, "july"),
+    translate(language, "august"),
+    translate(language, "september"),
+    translate(language, "october"),
+    translate(language, "november"),
+    translate(language, "december"),
   ];
   const currentMonthYear = `${
     monthNames[date.getMonth()]
@@ -227,12 +234,14 @@ const TransactionsPage = () => {
       <SidebarMenu open={showMenu} onClose={() => setShowMenu(false)} />
       <div className="dashboard-center-wrap">
         <div className="transactions-header">
-          <h1 className="dashboard-title">Transactions</h1>
+          <h1 className="dashboard-title">
+            {translate(language, "transactions")}
+          </h1>
           <button
             className="dashboard-add-transaction-btn"
             onClick={handleAddTransaction}
           >
-            + Add
+            {translate(language, "add")}
           </button>
         </div>
 
@@ -247,19 +256,19 @@ const TransactionsPage = () => {
             className={filter === "all" ? "active" : ""}
             onClick={() => setFilter("all")}
           >
-            all
+            {translate(language, "all")}
           </button>
           <button
             className={filter === "income" ? "active" : ""}
             onClick={() => setFilter("income")}
           >
-            income
+            {translate(language, "income")}
           </button>
           <button
             className={filter === "expense" ? "active" : ""}
             onClick={() => setFilter("expense")}
           >
-            expense
+            {translate(language, "expense")}
           </button>
         </div>
 
@@ -267,9 +276,13 @@ const TransactionsPage = () => {
 
         <div className="transactions-list">
           {loading ? (
-            <div className="transactions-empty">Loading...</div>
+            <div className="transactions-empty">
+              {translate(language, "loading")}
+            </div>
           ) : filtered.length === 0 ? (
-            <div className="transactions-empty">No transactions yet</div>
+            <div className="transactions-empty">
+              {translate(language, "noTransactions")}
+            </div>
           ) : (
             filtered.map((t, i) => (
               <div className="transaction-card" key={t.id || i}>
@@ -306,10 +319,10 @@ const TransactionsPage = () => {
             className="transaction-modal-content"
             onSubmit={handleSaveTransaction}
           >
-            <h2>Add Transaction</h2>
+            <h2>{translate(language, "addTransaction")}</h2>
 
             <label>
-              Name
+              {translate(language, "name")}
               <input
                 type="text"
                 value={form.name}
@@ -319,7 +332,7 @@ const TransactionsPage = () => {
             </label>
 
             <label>
-              Amount
+              {translate(language, "amount")}
               <input
                 type="number"
                 value={form.amount}
@@ -329,7 +342,7 @@ const TransactionsPage = () => {
             </label>
 
             <label>
-              Date
+              {translate(language, "date")}
               <input
                 type="date"
                 value={form.date}
@@ -339,42 +352,52 @@ const TransactionsPage = () => {
             </label>
 
             <label>
-              Category
+              {translate(language, "category")}
               <select
                 value={form.category}
                 onChange={(e) => setForm({ ...form, category: e.target.value })}
               >
-                <option value="food">Food</option>
-                <option value="transport">Transport</option>
-                <option value="entertainment">Entertainment</option>
-                <option value="utilities">Utilities</option>
-                <option value="health">Health</option>
-                <option value="shopping">Shopping</option>
-                <option value="other">Other</option>
+                <option value="food">{translate(language, "food")}</option>
+                <option value="transport">
+                  {translate(language, "transport")}
+                </option>
+                <option value="entertainment">
+                  {translate(language, "entertainment")}
+                </option>
+                <option value="utilities">
+                  {translate(language, "utilities")}
+                </option>
+                <option value="health">{translate(language, "health")}</option>
+                <option value="shopping">
+                  {translate(language, "shopping")}
+                </option>
+                <option value="other">{translate(language, "other")}</option>
               </select>
             </label>
 
             <label>
-              Type
+              {translate(language, "type")}
               <select
                 value={form.type}
                 onChange={(e) => setForm({ ...form, type: e.target.value })}
               >
-                <option value="expense">Expense</option>
-                <option value="income">Income</option>
+                <option value="expense">
+                  {translate(language, "expense")}
+                </option>
+                <option value="income">{translate(language, "income")}</option>
               </select>
             </label>
 
             <div className="transaction-modal-buttons">
               <button type="submit" className="primary-btn">
-                Save
+                {translate(language, "save")}
               </button>
               <button
                 type="button"
                 className="secondary-btn"
                 onClick={() => setShowModal(false)}
               >
-                Cancel
+                {translate(language, "cancel")}
               </button>
             </div>
           </form>
@@ -384,21 +407,21 @@ const TransactionsPage = () => {
       {showDeleteModal && (
         <div className="transaction-modal">
           <div className="delete-modal-content">
-            <h2>Do you wanna delete it?</h2>
+            <h2>{translate(language, "confirmDelete")}</h2>
             <div className="transaction-modal-buttons">
               <button
                 type="button"
                 className="delete-confirm-btn"
                 onClick={confirmDelete}
               >
-                Yes
+                {translate(language, "yes")}
               </button>
               <button
                 type="button"
                 className="delete-cancel-btn"
                 onClick={cancelDelete}
               >
-                No
+                {translate(language, "no")}
               </button>
             </div>
           </div>

@@ -6,6 +6,12 @@
   padding-bottom: 40px;
 }
 
+@media (max-width: 768px) {
+  .goals-list {
+    padding-bottom: 60px;
+  }
+}
+
 .goal-card {
   background: #fff;
   border-radius: 20px;
@@ -55,7 +61,9 @@
   background: none;
   cursor: pointer;
   color: #6936f4;
-  transition: transform 0.15s ease, opacity 0.15s ease;
+  transition:
+    transform 0.15s ease,
+    opacity 0.15s ease;
 }
 
 .goal-delete-btn::before,
