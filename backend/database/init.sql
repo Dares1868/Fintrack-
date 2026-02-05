@@ -8,14 +8,11 @@ CREATE TABLE IF NOT EXISTS users (
   password VARCHAR(255) NOT NULL,
   is_email_verified BOOLEAN DEFAULT FALSE,
   email_verification_token VARCHAR(255),
-  password_reset_token VARCHAR(255),
-  password_reset_expires DATETIME,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   last_login TIMESTAMP NULL,
   INDEX idx_email (email),
-  INDEX idx_email_verification_token (email_verification_token),
-  INDEX idx_password_reset_token (password_reset_token)
+  INDEX idx_email_verification_token (email_verification_token)
 );
 
 CREATE TABLE IF NOT EXISTS categories (
