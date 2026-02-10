@@ -71,14 +71,16 @@ const Login = () => {
             onChange={(e) => setPassword(e.target.value)}
           />
           <button type="submit" className="login-btn" disabled={isLoading}>
-            {isLoading ? translate(language, "signingIn") : translate(language, "signIn")}
+            {isLoading
+              ? translate(language, "signingIn")
+              : translate(language, "signIn")}
           </button>
         </form>
-        
+
         <div className="auth-links">
-          <button 
+          <button
             type="button"
-            className="link-btn forgot-password-btn" 
+            className="link-btn forgot-password-btn"
             onClick={() => setShowForgotPassword(true)}
           >
             {translate(language, "forgotPassword")}
@@ -93,7 +95,7 @@ const Login = () => {
         </div>
       </div>
 
-      <ForgotPasswordModal 
+      <ForgotPasswordModal
         isOpen={showForgotPassword}
         onClose={() => setShowForgotPassword(false)}
       />

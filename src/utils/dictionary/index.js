@@ -33,13 +33,31 @@ const DICTIONARY = {
   sendResetLink: { pl: "Wyślij link resetujący", en: "Send Reset Link" },
   newPassword: { pl: "Nowe hasło", en: "New Password" },
   confirmPassword: { pl: "Potwierdź hasło", en: "Confirm Password" },
-  passwordResetSuccess: { pl: "Hasło zostało zresetowane pomyślnie", en: "Password reset successfully" },
-  resetLinkSent: { pl: "Link resetujący został wysłany", en: "Reset link sent" },
-  demoResetLink: { pl: "Dla celów demonstracyjnych, twój link resetujący to:", en: "For demo purposes, your reset link is:" },
-  checkEmailInstructions: { pl: "Sprawdź swoją skrzynkę e-mail i kliknij link resetujący.", en: "Check your email and click the reset link." },
+  passwordResetSuccess: {
+    pl: "Hasło zostało zresetowane pomyślnie",
+    en: "Password reset successfully",
+  },
+  resetLinkSent: {
+    pl: "Link resetujący został wysłany",
+    en: "Reset link sent",
+  },
+  demoResetLink: {
+    pl: "Dla celów demonstracyjnych, twój link resetujący to:",
+    en: "For demo purposes, your reset link is:",
+  },
+  checkEmailInstructions: {
+    pl: "Sprawdź swoją skrzynkę e-mail i kliknij link resetujący.",
+    en: "Check your email and click the reset link.",
+  },
   close: { pl: "Zamknij", en: "Close" },
-  invalidResetToken: { pl: "Nieprawidłowy lub wygasły token resetujący", en: "Invalid or expired reset token" },
-  passwordsMustMatch: { pl: "Hasła muszą być identyczne", en: "Passwords must match" },
+  invalidResetToken: {
+    pl: "Nieprawidłowy lub wygasły token resetujący",
+    en: "Invalid or expired reset token",
+  },
+  passwordsMustMatch: {
+    pl: "Hasła muszą być identyczne",
+    en: "Passwords must match",
+  },
   loginFailed: {
     pl: "Logowanie nie powiodło się. Spróbuj ponownie.",
     en: "Login failed. Please try again.",

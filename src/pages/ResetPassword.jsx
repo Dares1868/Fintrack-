@@ -8,7 +8,7 @@ const ResetPassword = () => {
   const { token } = useParams();
   const navigate = useNavigate();
   const { language } = useLanguage();
-  
+
   const [formData, setFormData] = useState({
     password: "",
     confirmPassword: "",
@@ -39,16 +39,19 @@ const ResetPassword = () => {
 
     try {
       const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3001";
-      const response = await fetch(`${API_URL}/api/auth/reset-password/${token}`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
+      const response = await fetch(
+        `${API_URL}/api/auth/reset-password/${token}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            password: formData.password,
+            confirmPassword: formData.confirmPassword,
+          }),
         },
-        body: JSON.stringify({
-          password: formData.password,
-          confirmPassword: formData.confirmPassword,
-        }),
-      });
+      );
 
       const data = await response.json();
 
@@ -85,7 +88,7 @@ const ResetPassword = () => {
     <div className="auth-container">
       <div className="auth-form">
         <h1>{translate(language, "resetPassword")}</h1>
-        
+
         <form onSubmit={handleSubmit}>
           <div className="form-group">
             <label>{translate(language, "newPassword")}</label>
@@ -115,11 +118,7 @@ const ResetPassword = () => {
 
           {error && <div className="error-message">{error}</div>}
 
-          <button 
-            type="submit" 
-            className="primary-btn" 
-            disabled={loading}
-          >
+          <button type="submit" className="primary-btn" disabled={loading}>
             {loading ? "..." : translate(language, "resetPassword")}
           </button>
         </form>

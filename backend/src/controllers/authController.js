@@ -201,7 +201,7 @@ const getCurrentUser = async (req, res) => {
 const forgotPassword = async (req, res) => {
   try {
     const { email } = req.body;
-    
+
     if (!email) {
       return res.status(400).json({ error: "Email is required" });
     }
@@ -209,26 +209,30 @@ const forgotPassword = async (req, res) => {
     const user = await User.findByEmail(email);
     if (!user) {
       // Don't reveal if user exists or not for security
-      return res.json({ message: "If an account with that email exists, a reset link has been sent." });
+      return res.json({
+        message:
+          "If an account with that email exists, a reset link has been sent.",
+      });
     }
 
     // Generate reset token
-    const resetToken = crypto.randomBytes(32).toString('hex');
+    const resetToken = crypto.randomBytes(32).toString("hex");
     const resetExpires = new Date(Date.now() + 30 * 60 * 1000); // 30 minutes
 
     // Save token to database
     await User.setResetToken(user.id, resetToken, resetExpires);
 
     // Create reset link pointing to frontend, not backend
-    const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
+    const frontendUrl = process.env.FRONTEND_URL || "http://localhost:3000";
     const resetLink = `${frontendUrl}/reset-password/${resetToken}`;
-    
+
     // Send email using MailHog
     await sendPasswordResetEmail(user.email, resetLink, user.name);
-    
-    res.json({ 
-      message: "If an account with that email exists, a reset link has been sent.",
-      emailSent: true
+
+    res.json({
+      message:
+        "If an account with that email exists, a reset link has been sent.",
+      emailSent: true,
     });
   } catch (error) {
     console.error("Forgot password error:", error);
@@ -243,7 +247,9 @@ const resetPassword = async (req, res) => {
     const { password, confirmPassword } = req.body;
 
     if (!password || !confirmPassword) {
-      return res.status(400).json({ error: "Password and confirmation are required" });
+      return res
+        .status(400)
+        .json({ error: "Password and confirmation are required" });
     }
 
     if (password !== confirmPassword) {
@@ -251,7 +257,9 @@ const resetPassword = async (req, res) => {
     }
 
     if (password.length < 6) {
-      return res.status(400).json({ error: "Password must be at least 6 characters" });
+      return res
+        .status(400)
+        .json({ error: "Password must be at least 6 characters" });
     }
 
     // Find user by reset token
@@ -262,7 +270,7 @@ const resetPassword = async (req, res) => {
 
     // Update password and clear reset token
     await User.resetPassword(user.id, password);
-    
+
     res.json({ message: "Password reset successfully" });
   } catch (error) {
     console.error("Reset password error:", error);

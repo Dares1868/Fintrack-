@@ -31,14 +31,14 @@ class User {
       const [result] = await pool.execute(
         `INSERT INTO users (name, email, password, email_verification_token) 
          VALUES (?, ?, ?, ?)`,
-        [userData.name, userData.email, hashedPassword, emailVerificationToken]
+        [userData.name, userData.email, hashedPassword, emailVerificationToken],
       );
 
       // Return the created user (without password)
       const [rows] = await pool.execute(
         `SELECT id, name, email, is_email_verified, created_at, updated_at 
          FROM users WHERE id = ?`,
-        [result.insertId]
+        [result.insertId],
       );
 
       return new User(rows[0]);
@@ -96,7 +96,7 @@ class User {
     try {
       await pool.execute(
         "UPDATE users SET last_login = CURRENT_TIMESTAMP WHERE id = ?",
-        [this.id]
+        [this.id],
       );
 
       this.last_login = new Date();
@@ -112,7 +112,7 @@ class User {
     try {
       await pool.execute(
         "UPDATE users SET is_email_verified = true, email_verification_token = NULL WHERE id = ?",
-        [this.id]
+        [this.id],
       );
 
       this.is_email_verified = true;
@@ -126,11 +126,11 @@ class User {
   // Set password reset token
   static async setResetToken(userId, token, expires) {
     const pool = getPool();
-    
+
     try {
       await pool.execute(
         "UPDATE users SET password_reset_token = ?, password_reset_expires = ? WHERE id = ?",
-        [token, expires, userId]
+        [token, expires, userId],
       );
     } catch (error) {
       console.error("Error setting reset token:", error);
@@ -141,11 +141,11 @@ class User {
   // Find user by reset token
   static async findByResetToken(token) {
     const pool = getPool();
-    
+
     try {
       const [rows] = await pool.execute(
         "SELECT * FROM users WHERE password_reset_token = ? AND password_reset_expires > NOW()",
-        [token]
+        [token],
       );
 
       if (rows.length === 0) {
@@ -162,13 +162,13 @@ class User {
   // Reset password and clear reset token
   static async resetPassword(userId, newPassword) {
     const pool = getPool();
-    
+
     try {
       const hashedPassword = await bcrypt.hash(newPassword, 10);
-      
+
       await pool.execute(
         "UPDATE users SET password = ?, password_reset_token = NULL, password_reset_expires = NULL WHERE id = ?",
-        [hashedPassword, userId]
+        [hashedPassword, userId],
       );
     } catch (error) {
       console.error("Error resetting password:", error);

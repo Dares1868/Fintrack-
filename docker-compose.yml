@@ -72,8 +72,8 @@ services:
     image: mailhog/mailhog:latest
     container_name: fintrack-mailhog
     ports:
-      - "1025:1025"  # SMTP port
-      - "8025:8025"  # Web UI port
+      - "1025:1025" # SMTP port
+      - "8025:8025" # Web UI port
     networks:
       - fintrack-network
 
