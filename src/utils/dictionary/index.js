@@ -153,6 +153,8 @@ const DICTIONARY = {
   spendThis: { pl: "Wydatki w tym", en: "Spend this" },
   spendInMonth: { pl: "Wydatki w tym miesiącu", en: "Spend this month" },
   spendInYear: { pl: "Wydatki w tym roku", en: "Spend this year" },
+  thisMonth: { pl: "tym miesiącu", en: "this month" },
+  thisYear: { pl: "tym roku", en: "this year" },
 
   // Error messages
   errorFetchingData: {

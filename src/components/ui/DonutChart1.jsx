@@ -44,12 +44,23 @@ const DonutChart = ({ data, total, mode = "month" }) => {
         x="50%"
         y="50%"
         textAnchor="middle"
-        dy="0.4em"
-        fontSize="14"
+        dy="-0.5em"
+        fontSize="15"
         fill="#fff"
         fontWeight="bold"
       >
-        {translate(language, mode === "month" ? "spendInMonth" : "spendInYear")}
+        {translate(language, "expenses")}
+      </text>
+      <text
+        x="50%"
+        y="50%"
+        textAnchor="middle"
+        dy="0.8em"
+        fontSize="15"
+        fill="#fff"
+        fontWeight="bold"
+      >
+        {translate(language, mode === "month" ? "thisMonth" : "thisYear")}
       </text>
     </svg>
   );
