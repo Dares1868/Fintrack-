@@ -36,7 +36,7 @@ const register = async (req, res) => {
     const hasLowerCase = /[a-z]/.test(password);
     const hasNumber = /\d/.test(password);
     const hasSpecialChar = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(
-      password
+      password,
     );
 
     if (!hasUpperCase || !hasLowerCase || !hasNumber || !hasSpecialChar) {

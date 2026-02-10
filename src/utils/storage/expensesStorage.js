@@ -1,4 +1,8 @@
+// Deprecated: Use transactionService API calls instead
+// These functions are kept only for legacy support
+
 export const getExpenses = () => {
+  console.warn('getExpenses is deprecated. Use transactionService.getTransactions() instead');
   return JSON.parse(localStorage.getItem("expenses") || "[]");
 };
 

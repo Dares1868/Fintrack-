@@ -39,9 +39,10 @@
   flex-shrink: 0;
   box-sizing: border-box;
   overflow: hidden;
+  border: 3px solid rgba(255, 255, 255, 0.2);
 }
 .goal-icon span {
-  font-size: 45px;
+  font-size: 48px;
   display: block;
   line-height: 1;
 }

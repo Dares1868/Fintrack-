@@ -8,6 +8,7 @@ import {
   saveUserBalance,
 } from "../utils/storage/userStorage";
 import { getBalance } from "../services/balanceService";
+import * as goalService from "../services/goalService";
 import { translate } from "../utils/dictionary";
 import { useLanguage } from "../context/LanguageContext";
 
@@ -23,20 +24,20 @@ const Dashboard = () => {
   useEffect(() => {
     const fetchDashboardData = async () => {
       const storedName = getUserFullName();
-      const goalsFromStorage = JSON.parse(
-        localStorage.getItem("goalsData") || "[]",
-      );
 
       if (storedName) {
         setUserName(storedName);
-        setGoals(goalsFromStorage);
 
         try {
           // Fetch balance from API
           const balanceData = await getBalance();
           setUser({ name: storedName, balance: balanceData.currentAmount });
+          
+          // Fetch goals from API
+          const goalsData = await goalService.getGoals();
+          setGoals(goalsData);
         } catch (error) {
-          console.error("Error fetching balance:", error);
+          console.error("Error fetching data:", error);
           // Fallback to localStorage if API fails
           const storedBalance = getUserBalance();
           setUser({ name: storedName, balance: storedBalance });

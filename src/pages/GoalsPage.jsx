@@ -215,7 +215,10 @@ const GoalsPage = () => {
               >
                 <div
                   className="goal-icon"
-                  style={{ backgroundColor: goal.color }}
+                  style={{ 
+                    backgroundColor: goal.color,
+                    boxShadow: `0 0 0 3px ${goal.color}30`
+                  }}
                 >
                   <span role="img" aria-label="goal">
                     {goal.icon}
