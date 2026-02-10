@@ -8,15 +8,15 @@ import { translate } from "../utils/dictionary";
 import { useLanguage } from "../context/LanguageContext";
 
 const CATEGORY_COLORS = {
-  "📄": "#4b7be3",  // utilities - blue
-  "🎓": "#ff8c00",  // education - orange  
-  "🎬": "#ff00c3",  // entertainment - magenta
-  "🍴": "#16a085",  // food - green
-  "❤️": "#ffb3d9",  // health - light pink
-  "💡": "#9ca3af",  // other - gray
-  "🛒": "#ffd600",  // shopping - yellow
-  "🚗": "#00cfff",  // transport - cyan
-  "✈️": "#a682ff",  // travel - purple
+  "📄": "#4b7be3", // utilities - blue
+  "🎓": "#ff8c00", // education - orange
+  "🎬": "#ff00c3", // entertainment - magenta
+  "🍴": "#16a085", // food - green
+  "❤️": "#ffb3d9", // health - light pink
+  "💡": "#9ca3af", // other - gray
+  "🛒": "#ffd600", // shopping - yellow
+  "🚗": "#00cfff", // transport - cyan
+  "✈️": "#a682ff", // travel - purple
 };
 const CATEGORY_LABEL_KEYS = {
   "📄": "billsAndUtilities",
@@ -381,7 +381,9 @@ const ExpensesPage = () => {
           </div>
 
           <span className="expenses-total">
-            {headerTotalValue === 0 ? `${headerTotal} zł` : `-${headerTotal} zł`}
+            {headerTotalValue === 0
+              ? `${headerTotal} zł`
+              : `-${headerTotal} zł`}
           </span>
 
           <div className="view-toggle-wrap">

@@ -5,6 +5,7 @@ import authService from "../../services/authService";
 import { translate } from "../../utils/dictionary";
 import { useLanguage } from "../../context/LanguageContext";
 import LanguageSwitcher from "../ui/LanguageSwitcher";
+import ForgotPasswordModal from "./ForgotPasswordModal";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -15,6 +16,7 @@ const Login = () => {
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
+  const [showForgotPassword, setShowForgotPassword] = useState(false);
 
   useEffect(() => {
     // Check if there's a success message from registration
@@ -69,16 +71,32 @@ const Login = () => {
             onChange={(e) => setPassword(e.target.value)}
           />
           <button type="submit" className="login-btn" disabled={isLoading}>
-            {isLoading ? translate("signingIn") : translate("signIn")}
+            {isLoading ? translate(language, "signingIn") : translate(language, "signIn")}
           </button>
         </form>
+        
+        <div className="auth-links">
+          <button 
+            type="button"
+            className="link-btn forgot-password-btn" 
+            onClick={() => setShowForgotPassword(true)}
+          >
+            {translate(language, "forgotPassword")}
+          </button>
+        </div>
+
         <div className="login-bottom-link">
-          <span>{translate("dontHaveAccount")}</span>
+          <span>{translate(language, "dontHaveAccount")}</span>
           <button className="link-btn" onClick={() => navigate("/register")}>
-            {translate("signUp")}
+            {translate(language, "signUp")}
           </button>
         </div>
       </div>
+
+      <ForgotPasswordModal 
+        isOpen={showForgotPassword}
+        onClose={() => setShowForgotPassword(false)}
+      />
     </div>
   );
 };

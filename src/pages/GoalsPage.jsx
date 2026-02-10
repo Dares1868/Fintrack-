@@ -22,21 +22,76 @@ import {
 
 const categoryGroups = {
   "Short-Term Goals (0-12 months)": [
-    { name: "Vacation", icon: PaperAirplaneIcon, iconName: "AirplaneIcon", color: "#3498db" },
-    { name: "Gadgets / Electronics", icon: DevicePhoneMobileIcon, iconName: "DevicePhoneMobileIcon", color: "#9b59b6" },
-    { name: "Holiday Shopping", icon: GiftIcon, iconName: "GiftIcon", color: "#e74c3c" },
-    { name: "Emergency Buffer", icon: ExclamationTriangleIcon, iconName: "ExclamationTriangleIcon", color: "#e67e22" },
+    {
+      name: "Vacation",
+      icon: PaperAirplaneIcon,
+      iconName: "AirplaneIcon",
+      color: "#3498db",
+    },
+    {
+      name: "Gadgets / Electronics",
+      icon: DevicePhoneMobileIcon,
+      iconName: "DevicePhoneMobileIcon",
+      color: "#9b59b6",
+    },
+    {
+      name: "Holiday Shopping",
+      icon: GiftIcon,
+      iconName: "GiftIcon",
+      color: "#e74c3c",
+    },
+    {
+      name: "Emergency Buffer",
+      icon: ExclamationTriangleIcon,
+      iconName: "ExclamationTriangleIcon",
+      color: "#e67e22",
+    },
   ],
   "Mid-Term Goals (1-5 years)": [
-    { name: "Home Renovation", icon: HomeIcon, iconName: "HomeIcon", color: "#16a085" },
-    { name: "Car Purchase", icon: TruckIcon, iconName: "TruckIcon", color: "#2980b9" },
-    { name: "Wedding / Big Event", icon: HeartIcon, iconName: "HeartIcon", color: "#f39c12" },
-    { name: "Education Fund", icon: BookOpenIcon, iconName: "BookOpenIcon", color: "#8e44ad" },
+    {
+      name: "Home Renovation",
+      icon: HomeIcon,
+      iconName: "HomeIcon",
+      color: "#16a085",
+    },
+    {
+      name: "Car Purchase",
+      icon: TruckIcon,
+      iconName: "TruckIcon",
+      color: "#2980b9",
+    },
+    {
+      name: "Wedding / Big Event",
+      icon: HeartIcon,
+      iconName: "HeartIcon",
+      color: "#f39c12",
+    },
+    {
+      name: "Education Fund",
+      icon: BookOpenIcon,
+      iconName: "BookOpenIcon",
+      color: "#8e44ad",
+    },
   ],
   "Long-Term Goals (5+ years)": [
-    { name: "Retirement", icon: SunIcon, iconName: "SunIcon", color: "#27ae60" },
-    { name: "Real Estate Down Payment", icon: BuildingOffice2Icon, iconName: "BuildingOffice2Icon", color: "#2c3e50" },
-    { name: "Investment Fund", icon: ChartBarIcon, iconName: "ChartBarIcon", color: "#16a085" },
+    {
+      name: "Retirement",
+      icon: SunIcon,
+      iconName: "SunIcon",
+      color: "#27ae60",
+    },
+    {
+      name: "Real Estate Down Payment",
+      icon: BuildingOffice2Icon,
+      iconName: "BuildingOffice2Icon",
+      color: "#2c3e50",
+    },
+    {
+      name: "Investment Fund",
+      icon: ChartBarIcon,
+      iconName: "ChartBarIcon",
+      color: "#16a085",
+    },
   ],
 };
 
@@ -45,7 +100,7 @@ const statusOptions = ["active", "achieved", "cancelled"];
 
 // Function to get icon component from icon name
 const getIconComponent = (iconName) => {
-  console.log('getIconComponent called with:', iconName);
+  console.log("getIconComponent called with:", iconName);
   const iconMap = {
     AirplaneIcon: PaperAirplaneIcon,
     DevicePhoneMobileIcon,
@@ -60,14 +115,14 @@ const getIconComponent = (iconName) => {
     ChartBarIcon,
   };
   const result = iconMap[iconName];
-  console.log('iconMap result:', result);
+  console.log("iconMap result:", result);
   return result;
 };
 
 // Function to translate category names
 const translateCategoryName = (categoryName, language) => {
   const categoryTranslations = {
-    "Vacation": "vacation",
+    Vacation: "vacation",
     "Gadgets / Electronics": "gadgetsElectronics",
     "Holiday Shopping": "holidayShopping",
     "Emergency Buffer": "emergencyBuffer",
@@ -75,11 +130,11 @@ const translateCategoryName = (categoryName, language) => {
     "Car Purchase": "carPurchase",
     "Wedding / Big Event": "weddingBigEvent",
     "Education Fund": "educationFund",
-    "Retirement": "retirement",
+    Retirement: "retirement",
     "Real Estate Down Payment": "realEstateDownPayment",
-    "Investment Fund": "investmentFund"
+    "Investment Fund": "investmentFund",
   };
-  
+
   const translationKey = categoryTranslations[categoryName];
   return translationKey ? translate(language, translationKey) : categoryName;
 };
@@ -269,17 +324,23 @@ const GoalsPage = () => {
               >
                 <div
                   className="goal-icon"
-                  style={{ 
+                  style={{
                     backgroundColor: goal.color,
-                    boxShadow: `0 0 0 3px ${goal.color}30`
+                    boxShadow: `0 0 0 3px ${goal.color}30`,
                   }}
                 >
                   {(() => {
-                    console.log('Rendering icon for goal:', goal.icon);
+                    console.log("Rendering icon for goal:", goal.icon);
                     const IconComponent = getIconComponent(goal.icon);
-                    console.log('IconComponent:', IconComponent);
+                    console.log("IconComponent:", IconComponent);
                     return IconComponent ? (
-                      <IconComponent style={{ width: '24px', height: '24px', color: 'white' }} />
+                      <IconComponent
+                        style={{
+                          width: "24px",
+                          height: "24px",
+                          color: "white",
+                        }}
+                      />
                     ) : (
                       <span role="img" aria-label="goal">
                         {goal.icon}

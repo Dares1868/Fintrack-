@@ -26,12 +26,12 @@ import {
 } from "@heroicons/react/24/outline";
 
 // Debug imports
-console.log('PaperAirplaneIcon import:', PaperAirplaneIcon);
-console.log('BookOpenIcon import:', BookOpenIcon);
+console.log("PaperAirplaneIcon import:", PaperAirplaneIcon);
+console.log("BookOpenIcon import:", BookOpenIcon);
 
 // Function to get icon component from icon name
 const getIconComponent = (iconName) => {
-  console.log('Dashboard getIconComponent called with:', iconName);
+  console.log("Dashboard getIconComponent called with:", iconName);
   const iconMap = {
     AirplaneIcon: PaperAirplaneIcon,
     DevicePhoneMobileIcon,
@@ -46,7 +46,7 @@ const getIconComponent = (iconName) => {
     ChartBarIcon,
   };
   const result = iconMap[iconName];
-  console.log('Dashboard iconMap result:', result);
+  console.log("Dashboard iconMap result:", result);
   return result;
 };
 
@@ -70,7 +70,7 @@ const Dashboard = () => {
           // Fetch balance from API
           const balanceData = await getBalance();
           setUser({ name: storedName, balance: balanceData.currentAmount });
-          
+
           // Fetch goals from API
           const goalsData = await goalService.getGoals();
           setGoals(goalsData);
@@ -119,18 +119,20 @@ const Dashboard = () => {
             onClick={() => navigate(`/app/goal/${goal.id}`)}
             style={{ cursor: "pointer" }}
           >
-            <span 
+            <span
               className="goal-icon"
-              style={{ 
-                backgroundColor: goal.color || "#a682ff"
+              style={{
+                backgroundColor: goal.color || "#a682ff",
               }}
             >
               {(() => {
-                console.log('Dashboard rendering icon for goal:', goal.icon);
+                console.log("Dashboard rendering icon for goal:", goal.icon);
                 const IconComponent = getIconComponent(goal.icon);
-                console.log('Dashboard IconComponent:', IconComponent);
+                console.log("Dashboard IconComponent:", IconComponent);
                 return IconComponent ? (
-                  <IconComponent style={{ width: '18px', height: '18px', color: '#fff' }} />
+                  <IconComponent
+                    style={{ width: "18px", height: "18px", color: "#fff" }}
+                  />
                 ) : (
                   <span role="img" aria-label="goal">
                     {goal.icon || "🎯"}

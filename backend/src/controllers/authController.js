@@ -1,5 +1,7 @@
 const User = require("../models/User");
 const { initializeDatabase } = require("../config/database");
+const crypto = require("crypto");
+const { sendPasswordResetEmail } = require("../services/emailService");
 
 // Initialize database connection when controller loads
 initializeDatabase().catch(console.error);
@@ -195,9 +197,84 @@ const getCurrentUser = async (req, res) => {
   }
 };
 
+// Request password reset
+const forgotPassword = async (req, res) => {
+  try {
+    const { email } = req.body;
+    
+    if (!email) {
+      return res.status(400).json({ error: "Email is required" });
+    }
+
+    const user = await User.findByEmail(email);
+    if (!user) {
+      // Don't reveal if user exists or not for security
+      return res.json({ message: "If an account with that email exists, a reset link has been sent." });
+    }
+
+    // Generate reset token
+    const resetToken = crypto.randomBytes(32).toString('hex');
+    const resetExpires = new Date(Date.now() + 30 * 60 * 1000); // 30 minutes
+
+    // Save token to database
+    await User.setResetToken(user.id, resetToken, resetExpires);
+
+    // Create reset link pointing to frontend, not backend
+    const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
+    const resetLink = `${frontendUrl}/reset-password/${resetToken}`;
+    
+    // Send email using MailHog
+    await sendPasswordResetEmail(user.email, resetLink, user.name);
+    
+    res.json({ 
+      message: "If an account with that email exists, a reset link has been sent.",
+      emailSent: true
+    });
+  } catch (error) {
+    console.error("Forgot password error:", error);
+    res.status(500).json({ error: "Failed to process request" });
+  }
+};
+
+// Reset password
+const resetPassword = async (req, res) => {
+  try {
+    const { token } = req.params;
+    const { password, confirmPassword } = req.body;
+
+    if (!password || !confirmPassword) {
+      return res.status(400).json({ error: "Password and confirmation are required" });
+    }
+
+    if (password !== confirmPassword) {
+      return res.status(400).json({ error: "Passwords do not match" });
+    }
+
+    if (password.length < 6) {
+      return res.status(400).json({ error: "Password must be at least 6 characters" });
+    }
+
+    // Find user by reset token
+    const user = await User.findByResetToken(token);
+    if (!user) {
+      return res.status(400).json({ error: "Invalid or expired reset token" });
+    }
+
+    // Update password and clear reset token
+    await User.resetPassword(user.id, password);
+    
+    res.json({ message: "Password reset successfully" });
+  } catch (error) {
+    console.error("Reset password error:", error);
+    res.status(500).json({ error: "Failed to reset password" });
+  }
+};
+
 module.exports = {
   register,
   login,
   logout,
   getCurrentUser,
+  forgotPassword,
+  resetPassword,
 };

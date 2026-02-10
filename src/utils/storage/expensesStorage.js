@@ -2,7 +2,9 @@
 // These functions are kept only for legacy support
 
 export const getExpenses = () => {
-  console.warn('getExpenses is deprecated. Use transactionService.getTransactions() instead');
+  console.warn(
+    "getExpenses is deprecated. Use transactionService.getTransactions() instead",
+  );
   return JSON.parse(localStorage.getItem("expenses") || "[]");
 };
 
@@ -35,6 +37,6 @@ export const getExpensesByBudget = (budgetId) => {
 export const calculateSpentByBudget = (budgetId) => {
   return getExpensesByBudget(budgetId).reduce(
     (acc, expense) => acc + expense.amount,
-    0
+    0,
   );
 };

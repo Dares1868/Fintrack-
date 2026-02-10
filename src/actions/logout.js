@@ -24,8 +24,8 @@ export async function logoutAction() {
   deleteItem({
     key: "goalsData",
   });
-  
+
   toast.success("You've deleted your account!");
-  
+
   window.location.href = "/";
 }

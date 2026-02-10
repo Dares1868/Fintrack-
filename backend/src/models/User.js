@@ -123,6 +123,59 @@ class User {
     }
   }
 
+  // Set password reset token
+  static async setResetToken(userId, token, expires) {
+    const pool = getPool();
+    
+    try {
+      await pool.execute(
+        "UPDATE users SET password_reset_token = ?, password_reset_expires = ? WHERE id = ?",
+        [token, expires, userId]
+      );
+    } catch (error) {
+      console.error("Error setting reset token:", error);
+      throw error;
+    }
+  }
+
+  // Find user by reset token
+  static async findByResetToken(token) {
+    const pool = getPool();
+    
+    try {
+      const [rows] = await pool.execute(
+        "SELECT * FROM users WHERE password_reset_token = ? AND password_reset_expires > NOW()",
+        [token]
+      );
+
+      if (rows.length === 0) {
+        return null;
+      }
+
+      return new User(rows[0]);
+    } catch (error) {
+      console.error("Error finding user by reset token:", error);
+      throw error;
+    }
+  }
+
+  // Reset password and clear reset token
+  static async resetPassword(userId, newPassword) {
+    const pool = getPool();
+    
+    try {
+      const hashedPassword = await bcrypt.hash(newPassword, 10);
+      
+      await pool.execute(
+        "UPDATE users SET password = ?, password_reset_token = NULL, password_reset_expires = NULL WHERE id = ?",
+        [hashedPassword, userId]
+      );
+    } catch (error) {
+      console.error("Error resetting password:", error);
+      throw error;
+    }
+  }
+
   // Return user data without sensitive information
   toJSON() {
     const {

@@ -16,7 +16,7 @@ const CategoryIcon = ({ category, size = 40 }) => {
 
   const colors = {
     utilities: "#4b7be3",
-    education: "#ff8c00", 
+    education: "#ff8c00",
     entertainment: "#ff00c3",
     food: "#16a085",
     health: "#ffb3d9",

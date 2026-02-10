@@ -52,7 +52,7 @@ const GoalDetailsPage = () => {
     try {
       const updatedGoal = await goalService.addAmountToGoal(
         goal.id,
-        parseFloat(amount)
+        parseFloat(amount),
       );
       setGoal(updatedGoal);
       setAmount("");
@@ -130,7 +130,9 @@ const GoalDetailsPage = () => {
         <div className="goal-details-info-cards">
           {goal.categoryName && (
             <div className="goal-info-card">
-              <span className="goal-info-label">{translate(language, "category")}</span>
+              <span className="goal-info-label">
+                {translate(language, "category")}
+              </span>
               <span className="goal-info-value">
                 {goal.icon} {goal.categoryName}
               </span>
@@ -139,7 +141,9 @@ const GoalDetailsPage = () => {
 
           {goal.targetDate && (
             <div className="goal-info-card">
-              <span className="goal-info-label">{translate(language, "targetDate")}</span>
+              <span className="goal-info-label">
+                {translate(language, "targetDate")}
+              </span>
               <span className="goal-info-value">
                 {new Date(goal.targetDate).toLocaleDateString()}
               </span>
@@ -152,15 +156,17 @@ const GoalDetailsPage = () => {
                   {daysRemaining < 0
                     ? `${Math.abs(daysRemaining)} days overdue`
                     : daysRemaining === 0
-                    ? "Due today!"
-                    : `${daysRemaining} days left`}
+                      ? "Due today!"
+                      : `${daysRemaining} days left`}
                 </span>
               )}
             </div>
           )}
 
           <div className="goal-info-card">
-            <span className="goal-info-label">{translate(language, "status")}</span>
+            <span className="goal-info-label">
+              {translate(language, "status")}
+            </span>
             <select
               className={`goal-status-select status-${goal.status || "active"}`}
               value={goal.status || "active"}
@@ -193,8 +199,8 @@ const GoalDetailsPage = () => {
                 goal.status === "achieved"
                   ? "#27ae60"
                   : goal.status === "cancelled"
-                  ? "#95a5a6"
-                  : "#a682ff"
+                    ? "#95a5a6"
+                    : "#a682ff"
               }
               strokeWidth="12"
               fill="none"
@@ -224,8 +230,8 @@ const GoalDetailsPage = () => {
             {goal.target - (goal.current || 0) > 0
               ? `${(goal.target - (goal.current || 0)).toFixed(2)} zł ${translate(language, "left")}`
               : goal.status === "achieved"
-              ? translate(language, "goalAchieved")
-              : translate(language, "targetReached")}
+                ? translate(language, "goalAchieved")
+                : translate(language, "targetReached")}
           </div>
         </div>
 
@@ -251,7 +257,9 @@ const GoalDetailsPage = () => {
           <div className="transaction-modal">
             <div className="delete-modal-content">
               <h2>{translate(language, "deleteGoal")}</h2>
-              <p>{translate(language, "confirmDeleteGoal", { name: goal.name })}</p>
+              <p>
+                {translate(language, "confirmDeleteGoal", { name: goal.name })}
+              </p>
               <div className="transaction-modal-buttons">
                 <button
                   type="button"
