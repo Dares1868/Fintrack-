@@ -298,7 +298,7 @@ const TransactionsPage = () => {
                 >
                   {t.amount > 0 ? "+" : ""}
                   {t.amount < 0 ? "-" : ""}
-                  {Math.abs(t.amount).toFixed(2)}$
+                  {Math.abs(t.amount).toFixed(2)} zł
                 </span>
                 <button
                   className="transaction-delete-btn"

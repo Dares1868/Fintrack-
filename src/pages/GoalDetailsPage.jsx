@@ -4,12 +4,15 @@ import SidebarMenu from "../components/ui/SidebarMenu";
 import "../styles/dashboard.css";
 import "../styles/goals.css";
 import * as goalService from "../services/goalService";
+import { translate } from "../utils/dictionary";
+import { useLanguage } from "../context/LanguageContext";
 
 const statusOptions = ["active", "achieved", "cancelled"];
 
 const GoalDetailsPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { language } = useLanguage();
   const [goal, setGoal] = useState(null);
   const [amount, setAmount] = useState("");
   const [showMenu, setShowMenu] = useState(false);
@@ -114,7 +117,7 @@ const GoalDetailsPage = () => {
         <div className="goal-details-header">
           <h1 className="dashboard-title">{goal.name}</h1>
           <button className="goal-details-delete-btn" onClick={handleDelete}>
-            Delete
+            {translate(language, "delete")}
           </button>
         </div>
 
@@ -127,7 +130,7 @@ const GoalDetailsPage = () => {
         <div className="goal-details-info-cards">
           {goal.categoryName && (
             <div className="goal-info-card">
-              <span className="goal-info-label">Category</span>
+              <span className="goal-info-label">{translate(language, "category")}</span>
               <span className="goal-info-value">
                 {goal.icon} {goal.categoryName}
               </span>
@@ -136,7 +139,7 @@ const GoalDetailsPage = () => {
 
           {goal.targetDate && (
             <div className="goal-info-card">
-              <span className="goal-info-label">Target Date</span>
+              <span className="goal-info-label">{translate(language, "targetDate")}</span>
               <span className="goal-info-value">
                 {new Date(goal.targetDate).toLocaleDateString()}
               </span>
@@ -157,7 +160,7 @@ const GoalDetailsPage = () => {
           )}
 
           <div className="goal-info-card">
-            <span className="goal-info-label">Status</span>
+            <span className="goal-info-label">{translate(language, "status")}</span>
             <select
               className={`goal-status-select status-${goal.status || "active"}`}
               value={goal.status || "active"}
@@ -165,7 +168,7 @@ const GoalDetailsPage = () => {
             >
               {statusOptions.map((status) => (
                 <option key={status} value={status}>
-                  {status.charAt(0).toUpperCase() + status.slice(1)}
+                  {translate(language, status)}
                 </option>
               ))}
             </select>
@@ -215,14 +218,14 @@ const GoalDetailsPage = () => {
             </text>
           </svg>
           <div className="goal-details-progress-text">
-            ${goal.current || 0} / ${goal.target}
+            {goal.current || 0} zł / {goal.target} zł
           </div>
           <div className="goal-details-remaining">
             {goal.target - (goal.current || 0) > 0
-              ? `$${(goal.target - (goal.current || 0)).toFixed(2)} left`
+              ? `${(goal.target - (goal.current || 0)).toFixed(2)} zł ${translate(language, "left")}`
               : goal.status === "achieved"
-              ? "🎉 Goal achieved!"
-              : "Target reached!"}
+              ? translate(language, "goalAchieved")
+              : translate(language, "targetReached")}
           </div>
         </div>
 
@@ -230,7 +233,7 @@ const GoalDetailsPage = () => {
           <form onSubmit={handleAdd} className="goal-details-form">
             <input
               type="number"
-              placeholder="Add amount"
+              placeholder={translate(language, "addAmount")}
               value={amount}
               onChange={(e) => setAmount(e.target.value)}
               min="1"
@@ -239,7 +242,7 @@ const GoalDetailsPage = () => {
               required
             />
             <button type="submit" className="goal-details-submit-btn">
-              Add
+              {translate(language, "add")}
             </button>
           </form>
         )}
@@ -247,23 +250,22 @@ const GoalDetailsPage = () => {
         {showDeleteModal && (
           <div className="transaction-modal">
             <div className="delete-modal-content">
-              <h2>Delete Goal</h2>
-              <p>Are you sure you want to delete "{goal.name}"?</p>
-              <p className="delete-warning">This action cannot be undone.</p>
+              <h2>{translate(language, "deleteGoal")}</h2>
+              <p>{translate(language, "confirmDeleteGoal", { name: goal.name })}</p>
               <div className="transaction-modal-buttons">
                 <button
                   type="button"
                   className="delete-confirm-btn"
                   onClick={confirmDelete}
                 >
-                  Delete
+                  {translate(language, "delete")}
                 </button>
                 <button
                   type="button"
                   className="secondary-btn"
                   onClick={cancelDelete}
                 >
-                  Cancel
+                  {translate(language, "cancel")}
                 </button>
               </div>
             </div>

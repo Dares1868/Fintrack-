@@ -55,7 +55,7 @@ CREATE TABLE IF NOT EXISTS goals (
   target_amount DECIMAL(10,2) NOT NULL,
   current_amount DECIMAL(10,2) DEFAULT 0.00,
   target_date DATE,
-  icon VARCHAR(10),
+  icon VARCHAR(50),
   color VARCHAR(7) DEFAULT '#a682ff',
   category_name VARCHAR(100),
   status ENUM('active', 'achieved', 'cancelled') DEFAULT 'active',

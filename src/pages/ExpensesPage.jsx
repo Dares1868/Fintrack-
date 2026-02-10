@@ -381,7 +381,7 @@ const ExpensesPage = () => {
           </div>
 
           <span className="expenses-total">
-            {headerTotalValue === 0 ? `$${headerTotal}` : `-$${headerTotal}`}
+            {headerTotalValue === 0 ? `${headerTotal} zł` : `-${headerTotal} zł`}
           </span>
 
           <div className="view-toggle-wrap">
@@ -444,7 +444,7 @@ const ExpensesPage = () => {
                     </div>
                   </div>
                   <div className="expenses-transaction-amount">
-                    -${cat.sum.toFixed(2)}
+                    -{cat.sum.toFixed(2)} zł
                   </div>
                 </div>
               ))}

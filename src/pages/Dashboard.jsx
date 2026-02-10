@@ -12,7 +12,7 @@ import * as goalService from "../services/goalService";
 import { translate } from "../utils/dictionary";
 import { useLanguage } from "../context/LanguageContext";
 import {
-  AirplaneIcon,
+  PaperAirplaneIcon,
   DevicePhoneMobileIcon,
   GiftIcon,
   ExclamationTriangleIcon,
@@ -24,6 +24,31 @@ import {
   BuildingOffice2Icon,
   ChartBarIcon,
 } from "@heroicons/react/24/outline";
+
+// Debug imports
+console.log('PaperAirplaneIcon import:', PaperAirplaneIcon);
+console.log('BookOpenIcon import:', BookOpenIcon);
+
+// Function to get icon component from icon name
+const getIconComponent = (iconName) => {
+  console.log('Dashboard getIconComponent called with:', iconName);
+  const iconMap = {
+    AirplaneIcon: PaperAirplaneIcon,
+    DevicePhoneMobileIcon,
+    GiftIcon,
+    ExclamationTriangleIcon,
+    HomeIcon,
+    TruckIcon,
+    HeartIcon,
+    BookOpenIcon,
+    SunIcon,
+    BuildingOffice2Icon,
+    ChartBarIcon,
+  };
+  const result = iconMap[iconName];
+  console.log('Dashboard iconMap result:', result);
+  return result;
+};
 
 const Dashboard = () => {
   const [userName, setUserName] = useState("");
@@ -78,7 +103,7 @@ const Dashboard = () => {
         <div>
           <span>{translate("myBalance")}</span>
         </div>
-        <div className="balance-amount">${user.balance.toFixed(2)}</div>
+        <div className="balance-amount">{user.balance.toFixed(2)} zł</div>
       </div>
       <div className="goals-header">
         <span>{translate("goal")}</span>
@@ -100,15 +125,22 @@ const Dashboard = () => {
                 backgroundColor: goal.color || "#a682ff"
               }}
             >
-              {typeof goal.icon === 'string' ? (
-                goal.icon || "🎯"
-              ) : (
-                <goal.icon style={{ width: '18px', height: '18px', color: '#fff' }} />
-              )}
+              {(() => {
+                console.log('Dashboard rendering icon for goal:', goal.icon);
+                const IconComponent = getIconComponent(goal.icon);
+                console.log('Dashboard IconComponent:', IconComponent);
+                return IconComponent ? (
+                  <IconComponent style={{ width: '18px', height: '18px', color: '#fff' }} />
+                ) : (
+                  <span role="img" aria-label="goal">
+                    {goal.icon || "🎯"}
+                  </span>
+                );
+              })()}
             </span>
             <div>
               <span>{goal.name}</span>
-              <span>Goal ${goal.target}</span>
+              <span>Cel {goal.target} zł</span>
             </div>
             <span>
               {goal.target

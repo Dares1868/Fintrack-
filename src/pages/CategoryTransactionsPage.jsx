@@ -122,7 +122,7 @@ const CategoryTransactionsPage = () => {
                     </span>
                   </div>
                   <span className="transaction-amount expense">
-                    -${Math.abs(t.amount).toFixed(2)}
+                    -{Math.abs(t.amount).toFixed(2)} zł
                   </span>
                 </div>
               ))
