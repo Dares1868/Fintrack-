@@ -11,6 +11,19 @@ import { getBalance } from "../services/balanceService";
 import * as goalService from "../services/goalService";
 import { translate } from "../utils/dictionary";
 import { useLanguage } from "../context/LanguageContext";
+import {
+  AirplaneIcon,
+  DevicePhoneMobileIcon,
+  GiftIcon,
+  ExclamationTriangleIcon,
+  HomeIcon,
+  TruckIcon,
+  HeartIcon,
+  BookOpenIcon,
+  SunIcon,
+  BuildingOffice2Icon,
+  ChartBarIcon,
+} from "@heroicons/react/24/outline";
 
 const Dashboard = () => {
   const [userName, setUserName] = useState("");
@@ -78,10 +91,21 @@ const Dashboard = () => {
           <div
             className="goal-card"
             key={goal.name + idx}
-            onClick={() => navigate(`/app/goal/${idx}`)}
+            onClick={() => navigate(`/app/goal/${goal.id}`)}
             style={{ cursor: "pointer" }}
           >
-            <span className="goal-icon">{goal.icon || "🎯"}</span>
+            <span 
+              className="goal-icon"
+              style={{ 
+                backgroundColor: goal.color || "#a682ff"
+              }}
+            >
+              {typeof goal.icon === 'string' ? (
+                goal.icon || "🎯"
+              ) : (
+                <goal.icon style={{ width: '18px', height: '18px', color: '#fff' }} />
+              )}
+            </span>
             <div>
               <span>{goal.name}</span>
               <span>Goal ${goal.target}</span>

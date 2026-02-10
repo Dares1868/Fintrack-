@@ -8,15 +8,15 @@ import { translate } from "../utils/dictionary";
 import { useLanguage } from "../context/LanguageContext";
 
 const CATEGORY_COLORS = {
-  "📄": "#4B7BE3",
-  "🎓": "#FF8C00",
-  "🎬": "#FF00C3",
-  "🍴": "#4BE36A",
-  "❤️": "#FF5E5E",
-  "💡": "#9CA3AF",
-  "🛒": "#FFD600",
-  "🚗": "#00CFFF",
-  "✈️": "#A682FF",
+  "📄": "#4b7be3",  // utilities - blue
+  "🎓": "#ff8c00",  // education - orange  
+  "🎬": "#ff00c3",  // entertainment - magenta
+  "🍴": "#16a085",  // food - green
+  "❤️": "#ffb3d9",  // health - light pink
+  "💡": "#9ca3af",  // other - gray
+  "🛒": "#ffd600",  // shopping - yellow
+  "🚗": "#00cfff",  // transport - cyan
+  "✈️": "#a682ff",  // travel - purple
 };
 const CATEGORY_LABEL_KEYS = {
   "📄": "billsAndUtilities",

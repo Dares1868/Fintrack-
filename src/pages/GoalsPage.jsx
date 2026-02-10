@@ -6,24 +6,37 @@ import "../styles/goals.css";
 import * as goalService from "../services/goalService";
 import { translate } from "../utils/dictionary";
 import { useLanguage } from "../context/LanguageContext";
+import {
+  AirplaneIcon,
+  DevicePhoneMobileIcon,
+  GiftIcon,
+  ExclamationTriangleIcon,
+  HomeIcon,
+  TruckIcon,
+  HeartIcon,
+  BookOpenIcon,
+  SunIcon,
+  BuildingOffice2Icon,
+  ChartBarIcon,
+} from "@heroicons/react/24/outline";
 
 const categoryGroups = {
   "Short-Term Goals (0-12 months)": [
-    { name: "Vacation", icon: "✈️", color: "#3498db" },
-    { name: "Gadgets / Electronics", icon: "📱", color: "#9b59b6" },
-    { name: "Holiday Shopping", icon: "🎁", color: "#e74c3c" },
-    { name: "Emergency Buffer", icon: "🆘", color: "#e67e22" },
+    { name: "Vacation", icon: AirplaneIcon, color: "#3498db" },
+    { name: "Gadgets / Electronics", icon: DevicePhoneMobileIcon, color: "#9b59b6" },
+    { name: "Holiday Shopping", icon: GiftIcon, color: "#e74c3c" },
+    { name: "Emergency Buffer", icon: ExclamationTriangleIcon, color: "#e67e22" },
   ],
   "Mid-Term Goals (1-5 years)": [
-    { name: "Home Renovation", icon: "🏠", color: "#16a085" },
-    { name: "Car Purchase", icon: "🚗", color: "#2980b9" },
-    { name: "Wedding / Big Event", icon: "💒", color: "#f39c12" },
-    { name: "Education Fund", icon: "📚", color: "#8e44ad" },
+    { name: "Home Renovation", icon: HomeIcon, color: "#16a085" },
+    { name: "Car Purchase", icon: TruckIcon, color: "#2980b9" },
+    { name: "Wedding / Big Event", icon: HeartIcon, color: "#f39c12" },
+    { name: "Education Fund", icon: BookOpenIcon, color: "#8e44ad" },
   ],
   "Long-Term Goals (5+ years)": [
-    { name: "Retirement", icon: "🏖️", color: "#27ae60" },
-    { name: "Real Estate Down Payment", icon: "🏡", color: "#2c3e50" },
-    { name: "Investment Fund", icon: "📈", color: "#16a085" },
+    { name: "Retirement", icon: SunIcon, color: "#27ae60" },
+    { name: "Real Estate Down Payment", icon: BuildingOffice2Icon, color: "#2c3e50" },
+    { name: "Investment Fund", icon: ChartBarIcon, color: "#16a085" },
   ],
 };
 
@@ -220,9 +233,13 @@ const GoalsPage = () => {
                     boxShadow: `0 0 0 3px ${goal.color}30`
                   }}
                 >
-                  <span role="img" aria-label="goal">
-                    {goal.icon}
-                  </span>
+                  {typeof goal.icon === 'string' ? (
+                    <span role="img" aria-label="goal">
+                      {goal.icon}
+                    </span>
+                  ) : (
+                    <goal.icon style={{ width: '24px', height: '24px', color: 'white' }} />
+                  )}
                 </div>
                 <div className="goal-info">
                   <button

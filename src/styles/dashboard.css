@@ -154,14 +154,16 @@ h1 {
 }
 
 .goal-icon {
-  font-size: 22px;
+  font-size: 18px;
   margin-right: 8px;
-  background: #fff;
-  border-radius: 8px;
-  padding: 6px;
+  background: #a682ff;
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
   display: flex;
   align-items: center;
   justify-content: center;
+  color: #fff;
 }
 
 .goal-card > div {

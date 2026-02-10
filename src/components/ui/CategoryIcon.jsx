@@ -19,7 +19,7 @@ const CategoryIcon = ({ category, size = 40 }) => {
     education: "#ff8c00", 
     entertainment: "#ff00c3",
     food: "#16a085",
-    health: "#e74c3c",
+    health: "#ffb3d9",
     other: "#9ca3af",
     shopping: "#ffd600",
     transport: "#00cfff",
