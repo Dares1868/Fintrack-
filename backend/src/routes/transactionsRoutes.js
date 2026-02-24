@@ -10,22 +10,22 @@ const isAuthenticated = (req, res, next) => {
   next();
 };
 
-// Apply authentication middleware to all transaction routes
+
 router.use(isAuthenticated);
 
-// Get all transactions for the logged-in user
+
 router.get("/", transactionsController.getTransactions);
 
-// Create a new transaction
+
 router.post("/", transactionsController.createTransaction);
 
-// Migrate localStorage transactions to database (one-time operation)
+
 router.post("/migrate", transactionsController.migrateTransactions);
 
-// Get transaction summary by category
+
 router.get("/summary", transactionsController.getTransactionSummary);
 
-// Delete a transaction
+
 router.delete("/:id", transactionsController.deleteTransaction);
 
 module.exports = router;

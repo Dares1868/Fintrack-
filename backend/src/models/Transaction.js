@@ -70,7 +70,7 @@ class Transaction {
     return await this.findByUserId(userId);
   }
 
-  // Get transaction by ID (ensuring it belongs to the user)
+  // Get transaction by ID 
   static async findById(transactionId, userId) {
     const db = getPool();
     const [rows] = await db.query(
@@ -102,7 +102,7 @@ class Transaction {
   static async delete(transactionId, userId) {
     const db = getPool();
 
-    // First, get the transaction to retrieve amount and type for balance update
+   
     const transaction = await this.findById(transactionId, userId);
 
     if (!transaction) {
@@ -116,9 +116,7 @@ class Transaction {
     );
 
     if (result.affectedRows > 0) {
-      // Update balance by reversing the transaction
-      // If it was an expense (negative), add it back (subtract negative = add positive)
-      // If it was income (positive), subtract it
+      
       const reverseAmount = -transaction.amount;
       await Balance.updateBalance(
         userId,

@@ -117,6 +117,7 @@ const DICTIONARY = {
   salary: { pl: "Wypłata", en: "Salary" },
   other: { pl: "Inne", en: "Other" },
   customCategory: { pl: "Niestandardowa kategoria", en: "Custom Category" },
+  selectCategory: { pl: "Wybierz kategorię", en: "Select Category" },
 
   // Expense Categories (detailed)
   billsAndUtilities: { pl: "Rachunki i opłaty", en: "Bills & Utilities" },

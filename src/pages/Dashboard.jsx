@@ -32,6 +32,12 @@ console.log("BookOpenIcon import:", BookOpenIcon);
 // Function to get icon component from icon name
 const getIconComponent = (iconName) => {
   console.log("Dashboard getIconComponent called with:", iconName);
+  
+  // Handle emoji shortcuts by returning null to trigger fallback
+  if (iconName === 'car_emoji') {
+    return null;
+  }
+  
   const iconMap = {
     AirplaneIcon: PaperAirplaneIcon,
     DevicePhoneMobileIcon,
@@ -134,8 +140,12 @@ const Dashboard = () => {
                     style={{ width: "18px", height: "18px", color: "#fff" }}
                   />
                 ) : (
-                  <span role="img" aria-label="goal">
-                    {goal.icon || "🎯"}
+                  <span 
+                    role="img" 
+                    aria-label="goal"
+                    style={{ fontSize: '18px' }}
+                  >
+                    {goal.icon === 'car_emoji' ? '🚗' : (goal.icon || "🎯")}
                   </span>
                 );
               })()}

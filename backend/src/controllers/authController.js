@@ -1,5 +1,5 @@
 const User = require("../models/User");
-const { initializeDatabase } = require("../config/database");
+const { initializeDatabase, getPool } = require("../config/database");
 const crypto = require("crypto");
 const { sendPasswordResetEmail } = require("../services/emailService");
 
@@ -72,7 +72,50 @@ const register = async (req, res) => {
       email: newUser.email,
     });
 
-    // For now, we'll skip email verification and log success
+    // Create default categories for new user
+    try {
+      const db = getPool();
+      const defaultCategories = [
+        // Expense categories
+        [newUser.id, "Food & Dining", "#e74c3c", "utensils", "expense"],
+        [newUser.id, "Transportation", "#3498db", "car", "expense"],
+        [newUser.id, "Shopping", "#9b59b6", "shopping-bag", "expense"],
+        [newUser.id, "Entertainment", "#f39c12", "film", "expense"],
+        [
+          newUser.id,
+          "Bills & Utilities",
+          "#34495e",
+          "receipt-percent",
+          "expense",
+        ],
+        [newUser.id, "Health & Medical", "#e67e22", "heart", "expense"],
+        [newUser.id, "Education", "#27ae60", "academic-cap", "expense"],
+        [newUser.id, "Travel", "#16a085", "airplane", "expense"],
+        [newUser.id, "Personal Care", "#8e44ad", "sparkles", "expense"],
+        [newUser.id, "Other", "#95a5a6", "ellipsis-horizontal", "expense"],
+        // Goal categories
+        [newUser.id, "Emergency Fund", "#e74c3c", "shield-check", "goal"],
+        [newUser.id, "Vacation", "#3498db", "airplane", "goal"],
+        [newUser.id, "Home", "#27ae60", "home", "goal"],
+        [newUser.id, "Car", "#f39c12", "car", "goal"],
+        [newUser.id, "Education", "#9b59b6", "academic-cap", "goal"],
+        [newUser.id, "Investment", "#34495e", "chart-bar", "goal"],
+        [newUser.id, "Health", "#e67e22", "heart", "goal"],
+        [newUser.id, "Technology", "#16a085", "computer-desktop", "goal"],
+        [newUser.id, "Other", "#95a5a6", "star", "goal"],
+      ];
+
+      await db.query(
+        "INSERT INTO categories (user_id, name, color, icon, type) VALUES ?",
+        [defaultCategories],
+      );
+
+      console.log("Default categories created for user:", newUser.id);
+    } catch (categoryError) {
+      console.error("Error creating default categories:", categoryError);
+    
+    }
+
     console.log("Email verification would be sent to:", email);
 
     res.status(201).json({
@@ -208,7 +251,7 @@ const forgotPassword = async (req, res) => {
 
     const user = await User.findByEmail(email);
     if (!user) {
-      // Don't reveal if user exists or not for security
+   
       return res.json({
         message:
           "If an account with that email exists, a reset link has been sent.",
@@ -222,7 +265,7 @@ const forgotPassword = async (req, res) => {
     // Save token to database
     await User.setResetToken(user.id, resetToken, resetExpires);
 
-    // Create reset link pointing to frontend, not backend
+    
     const frontendUrl = process.env.FRONTEND_URL || "http://localhost:3000";
     const resetLink = `${frontendUrl}/reset-password/${resetToken}`;
 

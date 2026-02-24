@@ -76,13 +76,3 @@ CREATE TABLE IF NOT EXISTS balance (
   INDEX idx_user_id (user_id)
 );
 
-INSERT IGNORE INTO categories (user_id, name, color, icon) VALUES
-(1, 'Food & Dining', '#e74c3c', 'utensils'),
-(1, 'Transportation', '#3498db', 'car'),
-(1, 'Shopping', '#9b59b6', 'shopping-cart'),
-(1, 'Entertainment', '#f39c12', 'film'),
-(1, 'Bills & Utilities', '#34495e', 'file-invoice-dollar'),
-(1, 'Healthcare', '#e67e22', 'heartbeat'),
-(1, 'Education', '#27ae60', 'graduation-cap'),
-(1, 'Travel', '#16a085', 'plane'),
-(1, 'Other', '#95a5a6', 'ellipsis-h');

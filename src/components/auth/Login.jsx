@@ -19,7 +19,7 @@ const Login = () => {
   const [showForgotPassword, setShowForgotPassword] = useState(false);
 
   useEffect(() => {
-    // Check if there's a success message from registration
+
     if (location.state?.message) {
       setSuccessMessage(location.state.message);
     }

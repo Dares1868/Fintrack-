@@ -101,6 +101,10 @@ const statusOptions = ["active", "achieved", "cancelled"];
 // Function to get icon component from icon name
 const getIconComponent = (iconName) => {
   console.log("getIconComponent called with:", iconName);
+  
+  // Handle emoji shortcuts
+  if (iconName === 'car_emoji') return null; // Will fallback to emoji display
+  
   const iconMap = {
     AirplaneIcon: PaperAirplaneIcon,
     DevicePhoneMobileIcon,
@@ -227,11 +231,13 @@ const GoalsPage = () => {
       description: form.description,
       target: parseFloat(form.target),
       targetDate: form.targetDate,
-      icon: form.isCustomCategory ? form.customIcon : form.category.iconName,
-      color: form.isCustomCategory ? form.customColor : form.category.color,
+      icon: form.isCustomCategory
+        ? form.customIcon
+        : form.category?.icon || form.category?.iconName,
+      color: form.isCustomCategory ? form.customColor : form.category?.color,
       categoryName: form.isCustomCategory
         ? form.customCategoryName
-        : form.category.name,
+        : form.category?.name,
       status: form.status,
     };
 
@@ -342,8 +348,8 @@ const GoalsPage = () => {
                         }}
                       />
                     ) : (
-                      <span role="img" aria-label="goal">
-                        {goal.icon}
+                      <span role="img" aria-label="goal" style={{ fontSize: "24px" }}>
+                        {goal.icon === 'car_emoji' ? '🚗' : goal.icon}
                       </span>
                     );
                   })()}

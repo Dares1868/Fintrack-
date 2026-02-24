@@ -73,11 +73,9 @@ docker-compose restart fintrack-backend
 ### Connect to MySQL
 
 ```bash
-# From host machine
-mysql -h 127.0.0.1 -P 3307 -u fintrack_user -p
-# Password: userpassword
 
-# From inside Docker container
+mysql -h 127.0.0.1 -P 3307 -u fintrack_user -p
+
 docker exec -it fintrack-mysql mysql -u fintrack_user -p
 ```
 
@@ -146,10 +144,10 @@ VITE_API_URL=http://localhost:3001
 ### Services won't start
 
 ```bash
-# Check Docker is running
+
 docker --version
 
-# Clean up and rebuild
+
 docker-compose down --volumes --rmi all
 docker-compose up --build
 ```
@@ -157,10 +155,10 @@ docker-compose up --build
 ### Database connection issues
 
 ```bash
-# Check MySQL container logs
+
 docker-compose logs fintrack-mysql
 
-# Wait for MySQL to be ready (might take 30-60 seconds on first start)
+
 ```
 
 ### Port conflicts
@@ -169,13 +167,13 @@ If ports 3000, 3001, or 3307 are already in use, modify the port mappings in `do
 
 ```yaml
 ports:
-  - "3001:3001" # Change first number to available port
+  - "3001:3001"
 ```
 
 ### Clear all data
 
 ```bash
-# Warning: This will delete all database data
+
 docker-compose down --volumes
 docker-compose up --build
 ```

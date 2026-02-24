@@ -32,3 +32,4 @@ router.patch("/:id/add-amount", goalsController.addAmountToGoal);
 router.delete("/:id", goalsController.deleteGoal);
 
 module.exports = router;
+
